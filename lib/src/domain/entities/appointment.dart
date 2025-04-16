@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 class Appointment {
   final int id;
   final String clientName;
@@ -18,6 +20,8 @@ class Appointment {
     required this.reminderSent,
     required this.createdAt,
   });
+  String get formattedDate => DateFormat('EEE, dd MMM, yyyy', 'en_US').format(date);
+  String get formattedTime => DateFormat.jm().format(date);
 }
 
 final appointments = <Appointment>[
@@ -25,7 +29,7 @@ final appointments = <Appointment>[
     id: 1,
     clientName: "Roberto",
     clientPhone: "58490079",
-    date: DateTime(2024),
+    date: DateTime.now(),
     service: "Me pica el ano",
     note: "Tengo que arrascarme el ano",
     reminderSent: false,
