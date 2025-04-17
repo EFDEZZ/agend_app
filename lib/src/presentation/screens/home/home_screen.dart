@@ -1,4 +1,5 @@
 import 'package:agend_app/src/domain/entities/appointment.dart';
+import 'package:agend_app/src/presentation/screens/screens.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -8,6 +9,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     // final textStyle = Theme.of(context).textTheme;
     return Scaffold(
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
@@ -21,16 +23,24 @@ class HomeScreen extends StatelessWidget {
               
             ),
           ),
-          _HomeView()
+          _HomeView(),
         ],
       ),
       floatingActionButton: IconButton.filled(
-        onPressed: (){}, 
+        onPressed: (){
+          showModalBottomSheet(
+            isScrollControlled: true,
+            context: context, 
+            builder: (context) {
+              return AppointmentRegister();
+            },
+            );
+        }, 
         icon: Padding(
           padding: const EdgeInsets.all(5.0),
           child: Icon(Icons.add, size: 35,),
         )),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      
     );
   }
 }
