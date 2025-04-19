@@ -6,7 +6,6 @@ class AppointmentRegister extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
     return SizedBox(
       height: 700,
       child: Center(
