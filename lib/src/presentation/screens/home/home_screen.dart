@@ -57,23 +57,27 @@ class _HomeView extends StatelessWidget {
     margin: EdgeInsets.only(left: 5, right: 5, top: 5),
     child: Card(
       elevation: 3,
-      child: Padding(
-        padding: const EdgeInsets.all(30.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(appointment.service,),
-            Row(
-              // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                
-                Text(appointment.formattedDate),
-                // Text(appointment.formattedTime)
-                
-                
-              ],
-            ),
-          ],
+      child: InkWell(
+        borderRadius: BorderRadius.circular(15),
+        onTap: (){},
+        child: Padding(
+          padding: const EdgeInsets.all(30.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(appointment.service,),
+              Row(
+                // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  
+                  Text(appointment.formattedDate),
+                  // Text(appointment.formattedTime)
+                  
+                  
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     ),
