@@ -35,7 +35,7 @@ class _LoginScreenState extends State<LoginScreen> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Bienvenido ${_emailController.text}'),
+          content: Text('Welcome ${_emailController.text}'),
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -44,6 +44,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     return Scaffold(
       body: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.light,
@@ -80,7 +81,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     
                     // Título
                     const Text(
-                      'Inicia Sesión',
+                      'Log In',
                       style: TextStyle(
                         fontSize: 32,
                         fontWeight: FontWeight.bold,
@@ -89,7 +90,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 10),
                     const Text(
-                      'Ingresa tus credenciales para continuar',
+                      'Enter your credentials to continue',
                       style: TextStyle(
                         fontSize: 16,
                         color: Colors.white70,
@@ -114,7 +115,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 controller: _emailController,
                                 keyboardType: TextInputType.emailAddress,
                                 decoration: InputDecoration(
-                                  labelText: 'Correo electrónico',
+                                  labelText: 'Email',
                                   prefixIcon: const Icon(Icons.email),
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(10),
@@ -122,10 +123,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
-                                    return 'Por favor ingresa tu email';
+                                    return 'Please enter your email';
                                   }
                                   if (!value.contains('@') || !value.endsWith('.com')) {
-                                    return 'Ingresa un email válido';
+                                    return 'Enter a valid email address';
                                   }
                                   return null;
                                 },
@@ -137,7 +138,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 controller: _passwordController,
                                 obscureText: _obscurePassword,
                                 decoration: InputDecoration(
-                                  labelText: 'Contraseña',
+                                  labelText: 'Password',
                                   prefixIcon: const Icon(Icons.lock),
                                   suffixIcon: IconButton(
                                     icon: Icon(
@@ -157,10 +158,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
-                                    return 'Por favor ingresa tu contraseña';
+                                    return 'Please enter your password';
                                   }
                                   if (value.length < 6) {
-                                    return 'La contraseña debe tener al menos 6 caracteres';
+                                    return 'Password must be at least 6 characters long';
                                   }
                                   return null;
                                 },
@@ -174,7 +175,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   onPressed: () {
                                     // Navegar a pantalla de recuperación
                                   },
-                                  child: const Text('¿Olvidaste tu contraseña?'),
+                                  child: const Text('¿You forgot your password?'),
                                 ),
                               ),
                               const SizedBox(height: 20),
@@ -185,6 +186,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 child: ElevatedButton(
                                   onPressed: _isLoading ? null : _submitForm,
                                   style: ElevatedButton.styleFrom(
+                                    backgroundColor: Color.fromRGBO(24, 119, 242, 1),
                                     padding: const EdgeInsets.symmetric(vertical: 16),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(10),
@@ -195,8 +197,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                           color: Colors.white,
                                         )
                                       : const Text(
-                                          'Iniciar Sesión',
-                                          style: TextStyle(fontSize: 16),
+                                          'Log In',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            color: Colors.white,
+                                            ),
                                         ),
                                 ),
                               ),
@@ -206,12 +211,12 @@ class _LoginScreenState extends State<LoginScreen> {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  const Text('¿No tienes una cuenta?'),
+                                  const Text("¿You don't have an account?"),
                                   TextButton(
                                     onPressed: () {
                                       context.push('/RegisterScreen/');
                                     },
-                                    child: const Text('Regístrate'),
+                                    child: const Text('Register', style: TextStyle(color: Color.fromRGBO(8, 102, 255, 1),),),
                                   ),
                                 ],
                               ),

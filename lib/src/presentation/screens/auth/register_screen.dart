@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
 
@@ -46,14 +45,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [
-                    Color(0xFF6A11CB),
-                    Color(0xFF2575FC),
-                  ],
+                  colors: [Color(0xFF6A11CB), Color(0xFF2575FC)],
                 ),
               ),
             ),
-            
+
             // Contenido
             Center(
               child: SingleChildScrollView(
@@ -68,10 +64,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       color: Colors.white,
                     ),
                     const SizedBox(height: 30),
-                    
+
                     // Título
                     const Text(
-                      'Regístrate',
+                      'Register',
                       style: TextStyle(
                         fontSize: 32,
                         fontWeight: FontWeight.bold,
@@ -80,14 +76,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     const SizedBox(height: 10),
                     const Text(
-                      'Crea una cuenta para comenzar',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.white70,
-                      ),
+                      'Create an account to get started',
+                      style: TextStyle(fontSize: 16, color: Colors.white70),
                     ),
                     const SizedBox(height: 40),
-                    
+
                     // Formulario
                     Card(
                       elevation: 8,
@@ -104,7 +97,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               TextFormField(
                                 controller: _nameController,
                                 decoration: InputDecoration(
-                                  labelText: 'Nombre completo',
+                                  labelText: 'Full name',
                                   prefixIcon: const Icon(Icons.person),
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(10),
@@ -112,22 +105,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 ),
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
-                                    return 'Por favor ingresa tu nombre';
+                                    return 'Please enter your name';
                                   }
                                   if (value.length < 3) {
-                                    return 'El nombre debe tener al menos 3 caracteres';
+                                    return 'The name must be at least 3 characters long';
                                   }
                                   return null;
                                 },
                               ),
                               const SizedBox(height: 20),
-                              
+
                               // Campo de Email
                               TextFormField(
                                 controller: _emailController,
                                 keyboardType: TextInputType.emailAddress,
                                 decoration: InputDecoration(
-                                  labelText: 'Correo electrónico',
+                                  labelText: 'Email',
                                   prefixIcon: const Icon(Icons.email),
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(10),
@@ -135,22 +128,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 ),
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
-                                    return 'Por favor ingresa tu email';
+                                    return 'Please enter your email';
                                   }
-                                  if (!value.contains('@') || !value.endsWith('.com')) {
-                                    return 'Ingresa un email válido';
+                                  if (!value.contains('@') ||
+                                      !value.endsWith('.com')) {
+                                    return 'Enter a valid email address';
                                   }
                                   return null;
                                 },
                               ),
                               const SizedBox(height: 20),
-                              
+
                               // Campo de Contraseña
                               TextFormField(
                                 controller: _passwordController,
                                 obscureText: _obscurePassword,
                                 decoration: InputDecoration(
-                                  labelText: 'Contraseña',
+                                  labelText: 'Password',
                                   prefixIcon: const Icon(Icons.lock),
                                   suffixIcon: IconButton(
                                     icon: Icon(
@@ -161,41 +155,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     onPressed: () {
                                       setState(() {
                                         _obscurePassword = !_obscurePassword;
-                                      });                                      
-                                    },
-                                  ),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                ),
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Por favor ingresa tu contraseña';
-                                  }
-                                  if (value.length < 6) {
-                                    return 'La contraseña debe tener al menos 6 caracteres';
-                                  }
-                                  return null;
-                                },
-                              ),
-                              const SizedBox(height: 20),
-                              
-                              // Campo de Confirmar Contraseña
-                              TextFormField(
-                                controller: _confirmPasswordController,
-                                obscureText: _obscureConfirmPassword,
-                                decoration: InputDecoration(
-                                  labelText: 'Confirmar Contraseña',
-                                  prefixIcon: const Icon(Icons.lock_outline),
-                                  suffixIcon: IconButton(
-                                    icon: Icon(
-                                      _obscureConfirmPassword
-                                          ? Icons.visibility
-                                          : Icons.visibility_off,
-                                    ),
-                                    onPressed: () {
-                                      setState(() {
-                                      _obscureConfirmPassword = !_obscureConfirmPassword;
                                       });
                                     },
                                   ),
@@ -205,16 +164,52 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 ),
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
-                                    return 'Por favor confirma tu contraseña';
+                                    return 'Please enter your password';
+                                  }
+                                  if (value.length < 6) {
+                                    return 'Password must be at least 6 characters long';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              const SizedBox(height: 20),
+
+                              // Campo de Confirmar Contraseña
+                              TextFormField(
+                                controller: _confirmPasswordController,
+                                obscureText: _obscureConfirmPassword,
+                                decoration: InputDecoration(
+                                  labelText: 'Confirm Password',
+                                  prefixIcon: const Icon(Icons.lock_outline),
+                                  suffixIcon: IconButton(
+                                    icon: Icon(
+                                      _obscureConfirmPassword
+                                          ? Icons.visibility
+                                          : Icons.visibility_off,
+                                    ),
+                                    onPressed: () {
+                                      setState(() {
+                                        _obscureConfirmPassword =
+                                            !_obscureConfirmPassword;
+                                      });
+                                    },
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                ),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please confirm your password';
                                   }
                                   if (value != _passwordController.text) {
-                                    return 'Las contraseñas no coinciden';
+                                    return "Passwords don't match";
                                   }
                                   return null;
                                 },
                               ),
                               const SizedBox(height: 30),
-                              
+
                               // Botón de Registro
                               SizedBox(
                                 width: double.infinity,
@@ -222,39 +217,62 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   onPressed: () {
                                     if (_formKey.currentState!.validate()) {
                                       // Lógica de registro
-                                      Navigator.pop(context); // Regresa al login después de registrar
-                                      ScaffoldMessenger.of(context).showSnackBar(
+                                      Navigator.pop(
+                                        context,
+                                      ); // Regresa al login después de registrar
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
                                         const SnackBar(
-                                          content: Text('Registro exitoso!'),
+                                          content: Text(
+                                            'Successful registration!',
+                                          ),
                                           behavior: SnackBarBehavior.floating,
                                         ),
                                       );
                                     }
                                   },
                                   style: ElevatedButton.styleFrom(
-                                    padding: const EdgeInsets.symmetric(vertical: 16),
+                                    backgroundColor: Color.fromRGBO(
+                                      0,
+                                      164,
+                                      0,
+                                      1,
+                                    ),
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 16,
+                                    ),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(10),
                                     ),
                                   ),
                                   child: const Text(
-                                    'Registrarse',
-                                    style: TextStyle(fontSize: 16),
+                                    'Sign Up',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.white,
+                                    ),
                                   ),
                                 ),
                               ),
                               const SizedBox(height: 20),
-                              
+
                               // Ya tengo cuenta
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  const Text('¿Ya tienes una cuenta?'),
                                   TextButton(
                                     onPressed: () {
-                                      Navigator.pop(context); // Regresa al login
+                                      Navigator.pop(
+                                        context,
+                                      ); // Regresa al login
                                     },
-                                    child: const Text('Inicia Sesión'),
+                                    child: const Text(
+                                      'Already have an account?',
+                                      style: TextStyle(
+                                        color: Color.fromRGBO(8, 102, 255, 1),
+                                      ),
+                                    ),
                                   ),
                                 ],
                               ),
