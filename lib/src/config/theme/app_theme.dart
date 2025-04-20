@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 const colors = <Color>[
   Colors.blue,
+  Colors.deepPurple,
   Colors.red,
   Colors.green,
   Colors.yellow,
@@ -21,3 +22,7 @@ class AppTheme {
     brightness: Brightness.dark
   );
 }
+
+//  colorScheme: ColorScheme.fromSeed(
+//           seedColor: Colors.deepPurple,
+//           brightness: Brightness.dark,
