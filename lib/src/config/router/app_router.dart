@@ -8,5 +8,9 @@ final appRouter = GoRouter(
       path: '/',
       builder: (context, state) => HomeScreen(), 
       ),
+    GoRoute(
+      path: '/RegisterScreen',
+      builder: (context, state) => RegisterScreen(), 
+      ),
   ]
 );
