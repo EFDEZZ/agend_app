@@ -1,3 +1,4 @@
+import 'package:agend_app/src/infrastructure/services/services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
@@ -24,27 +25,45 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _submitForm() async {
-    if (_formKey.currentState!.validate()) {
-      setState(() => _isLoading = true);
+  if (_formKey.currentState!.validate()) {
+    setState(() => _isLoading = true);
+    
+    final result = await LoginService.login(
+      email: _emailController.text.trim(),
+      password: _passwordController.text.trim(),
+    );
+
+    setState(() => _isLoading = false);
+    
+    if (!mounted) return;
+
+    if (result['success'] == true) {
+      // Login exitoso
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(
+      //     content: Text('Welcome! Login successful'),
+      //     backgroundColor: Colors.green,
+      //     behavior: SnackBarBehavior.floating,
+      //   ),
+      // );
       
-      // Simular una llamada a API
-      await Future.delayed(const Duration(seconds: 2));
-      
-      setState(() => _isLoading = false);
-      
-      if (!mounted) return;
+      // Navegar a pantalla principal
+      context.go('/reminder');
+    } else {
+      // Mostrar error
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Welcome ${_emailController.text}'),
+          content: Text('Login failed'),
+          backgroundColor: Colors.red,
           behavior: SnackBarBehavior.floating,
         ),
       );
     }
   }
+}
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
     return Scaffold(
       body: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle.light,
@@ -186,7 +205,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 child: ElevatedButton(
                                   onPressed: _isLoading ? null : _submitForm,
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: Color.fromRGBO(24, 119, 242, 1),
+                                    backgroundColor: Color(0xFFEDC238),
                                     padding: const EdgeInsets.symmetric(vertical: 16),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(10),
@@ -214,7 +233,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   const Text("¿You don't have an account?"),
                                   TextButton(
                                     onPressed: () {
-                                      context.push('/RegisterScreen/');
+                                      context.push('/register/');
                                     },
                                     child: const Text('Register', style: TextStyle(color: Color.fromRGBO(8, 102, 255, 1),),),
                                   ),
