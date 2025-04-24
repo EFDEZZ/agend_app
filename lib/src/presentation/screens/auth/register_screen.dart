@@ -1,5 +1,7 @@
+import 'package:agend_app/src/infrastructure/services/services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -10,18 +12,14 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
-
   final _nameController = TextEditingController();
-
   final _emailController = TextEditingController();
-
   final _passwordController = TextEditingController();
-
   final _confirmPasswordController = TextEditingController();
 
   bool _obscurePassword = true;
-
   bool _obscureConfirmPassword = true;
+  bool _isLoading = false; // Para manejar el estado de carga
 
   @override
   void dispose() {
@@ -32,6 +30,51 @@ class _RegisterScreenState extends State<RegisterScreen> {
     super.dispose();
   }
 
+  Future<void> _registerUser() async {
+  if (_formKey.currentState!.validate()) {
+    setState(() {
+      _isLoading = true;
+    });
+
+    final result = await RegisterService.registerUser(
+      name: _nameController.text.trim(),
+      email: _emailController.text.trim(),
+      password: _passwordController.text.trim(),
+    );
+
+    setState(() {
+      _isLoading = false;
+    });
+
+    if (!mounted) return;
+
+    if (result['success'] == true) {
+      // Registro exitoso - muestra los datos del usuario
+      // final userData = result['userData'];
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Registro exitoso!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+      
+      // Guarda los datos del usuario si es necesario
+      // Por ejemplo: await saveUserData(userData);
+      
+      // Navega a la pantalla principal
+      // Navigator.pushReplacementNamed(context, '/home');
+    } else {
+      // Error en el registro
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(result['message']),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,7 +82,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         value: SystemUiOverlayStyle.light,
         child: Stack(
           children: [
-            // Fondo degradado (igual que en login)
+            // Fondo degradado
             Container(
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
@@ -214,31 +257,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               SizedBox(
                                 width: double.infinity,
                                 child: ElevatedButton(
-                                  onPressed: () {
-                                    if (_formKey.currentState!.validate()) {
-                                      // Lógica de registro
-                                      Navigator.pop(
-                                        context,
-                                      ); // Regresa al login después de registrar
-                                      ScaffoldMessenger.of(
-                                        context,
-                                      ).showSnackBar(
-                                        const SnackBar(
-                                          content: Text(
-                                            'Successful registration!',
-                                          ),
-                                          behavior: SnackBarBehavior.floating,
-                                        ),
-                                      );
-                                    }
-                                  },
+                                  onPressed: _isLoading ? null : _registerUser,
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: Color.fromRGBO(
-                                      0,
-                                      164,
-                                      0,
-                                      1,
-                                    ),
+                                    backgroundColor: const Color(0xFFEDC238),
                                     padding: const EdgeInsets.symmetric(
                                       vertical: 16,
                                     ),
@@ -246,13 +267,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                       borderRadius: BorderRadius.circular(10),
                                     ),
                                   ),
-                                  child: const Text(
-                                    'Sign Up',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.white,
-                                    ),
-                                  ),
+                                  child:
+                                      _isLoading
+                                          ? const CircularProgressIndicator(
+                                            color: Colors.white,
+                                          )
+                                          : const Text(
+                                            'Sign Up',
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              color: Colors.white,
+                                            ),
+                                          ),
                                 ),
                               ),
                               const SizedBox(height: 20),
@@ -262,11 +288,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   TextButton(
-                                    onPressed: () {
-                                      Navigator.pop(
-                                        context,
-                                      ); // Regresa al login
-                                    },
+                                    onPressed:
+                                        _isLoading
+                                            ? null
+                                            : () => context.go('/login'),
                                     child: const Text(
                                       'Already have an account?',
                                       style: TextStyle(
