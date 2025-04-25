@@ -25,42 +25,43 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _submitForm() async {
-  if (_formKey.currentState!.validate()) {
-    setState(() => _isLoading = true);
-    
-    final result = await LoginService.login(
-      email: _emailController.text.trim(),
-      password: _passwordController.text.trim(),
-    );
+    if (_formKey.currentState!.validate()) {
+      setState(() => _isLoading = true);
 
-    setState(() => _isLoading = false);
-    
-    if (!mounted) return;
+      try {
+        final success = await LoginService().login(
+          _emailController.text.trim(),
+          _passwordController.text.trim(),
+        );
 
-    if (result['success'] == true) {
-      // Login exitoso
-      // ScaffoldMessenger.of(context).showSnackBar(
-      //   SnackBar(
-      //     content: Text('Welcome! Login successful'),
-      //     backgroundColor: Colors.green,
-      //     behavior: SnackBarBehavior.floating,
-      //   ),
-      // );
-      
-      // Navegar a pantalla principal
-      context.go('/reminder');
-    } else {
-      // Mostrar error
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Login failed'),
-          backgroundColor: Colors.red,
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
+        setState(() => _isLoading = false);
+
+        if (!mounted) return;
+
+        if (success) {
+          context.go('/reminder');
+
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Login failed'),
+              backgroundColor: Colors.red,
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        }
+      } catch (e) {
+        setState(() => _isLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: ${e.toString()}'),
+            backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
     }
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +70,6 @@ class _LoginScreenState extends State<LoginScreen> {
         value: SystemUiOverlayStyle.light,
         child: Stack(
           children: [
-            // Fondo degradado
             Container(
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
@@ -82,23 +82,18 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
             ),
-            
-            // Contenido
             Center(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(24),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Logo/Icono
                     const Icon(
                       Icons.account_circle,
                       size: 100,
                       color: Colors.white,
                     ),
                     const SizedBox(height: 30),
-                    
-                    // Título
                     const Text(
                       'Log In',
                       style: TextStyle(
@@ -116,8 +111,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                     const SizedBox(height: 40),
-                    
-                    // Formulario
                     Card(
                       elevation: 8,
                       shape: RoundedRectangleBorder(
@@ -129,7 +122,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           key: _formKey,
                           child: Column(
                             children: [
-                              // Campo de Email
                               TextFormField(
                                 controller: _emailController,
                                 keyboardType: TextInputType.emailAddress,
@@ -151,8 +143,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                 },
                               ),
                               const SizedBox(height: 20),
-                              
-                              // Campo de Contraseña
                               TextFormField(
                                 controller: _passwordController,
                                 obscureText: _obscurePassword,
@@ -186,47 +176,34 @@ class _LoginScreenState extends State<LoginScreen> {
                                 },
                               ),
                               const SizedBox(height: 10),
-                              
-                              // Olvidé mi contraseña
                               Align(
                                 alignment: Alignment.centerRight,
                                 child: TextButton(
-                                  onPressed: () {
-                                    // Navegar a pantalla de recuperación
-                                  },
+                                  onPressed: () {},
                                   child: const Text('¿You forgot your password?'),
                                 ),
                               ),
                               const SizedBox(height: 20),
-                              
-                              // Botón de Login
                               SizedBox(
                                 width: double.infinity,
                                 child: ElevatedButton(
                                   onPressed: _isLoading ? null : _submitForm,
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: Color(0xFFEDC238),
+                                    backgroundColor: const Color(0xFFEDC238),
                                     padding: const EdgeInsets.symmetric(vertical: 16),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(10),
                                     ),
                                   ),
                                   child: _isLoading
-                                      ? const CircularProgressIndicator(
-                                          color: Colors.white,
-                                        )
+                                      ? const CircularProgressIndicator(color: Colors.white)
                                       : const Text(
                                           'Log In',
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            color: Colors.white,
-                                            ),
+                                          style: TextStyle(fontSize: 16, color: Colors.white),
                                         ),
                                 ),
                               ),
                               const SizedBox(height: 20),
-                              
-                              // Registrarse
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
@@ -235,7 +212,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                     onPressed: () {
                                       context.push('/register/');
                                     },
-                                    child: const Text('Register', style: TextStyle(color: Color.fromRGBO(8, 102, 255, 1),),),
+                                    child: const Text(
+                                      'Register',
+                                      style: TextStyle(color: Color.fromRGBO(8, 102, 255, 1)),
+                                    ),
                                   ),
                                 ],
                               ),
