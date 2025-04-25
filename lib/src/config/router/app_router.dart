@@ -1,16 +1,25 @@
+import 'package:agend_app/src/presentation/screens/home/home_screen.dart';
 import 'package:agend_app/src/presentation/screens/screens.dart';
 import 'package:go_router/go_router.dart';
 
 final appRouter = GoRouter(
-  initialLocation: '/',
+  initialLocation: '/login',
   routes: [
     GoRoute(
-      path: '/',
-      builder: (context, state) => HomeScreen(), 
+      path: '/reminder',
+      builder: (context, state) => AppointmentReminder(), 
       ),
     GoRoute(
-      path: '/RegisterScreen',
+      path: '/register',
       builder: (context, state) => RegisterScreen(), 
+      ),
+    GoRoute(
+      path: '/login',
+      builder: (context, state) => LoginScreen(), 
+      ),
+    GoRoute(
+      path: '/home',
+      builder: (context, state) => HomeScreen(), 
       ),
   ]
 );
