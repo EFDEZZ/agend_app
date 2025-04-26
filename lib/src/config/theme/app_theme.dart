@@ -22,7 +22,3 @@ class AppTheme {
     brightness: Brightness.dark
   );
 }
-
-//  colorScheme: ColorScheme.fromSeed(
-//           seedColor: Colors.deepPurple,
-//           brightness: Brightness.dark,
