@@ -4,8 +4,7 @@ import 'package:http/http.dart' as http;
 import 'dart:io';
 
 class RegisterService {
-  static const String _baseUrl =
-      'https://ds-appointments-production.up.railway.app';
+  static const String _baseUrl = 'https://ds-appointments-production.up.railway.app';
 
   static Future<Map<String, dynamic>> registerUser({
     required String name,
