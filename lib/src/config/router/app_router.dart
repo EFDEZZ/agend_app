@@ -1,4 +1,3 @@
-import 'package:agend_app/src/presentation/screens/home/home_screen.dart';
 import 'package:agend_app/src/presentation/screens/screens.dart';
 import 'package:go_router/go_router.dart';
 
@@ -7,7 +6,7 @@ final appRouter = GoRouter(
   routes: [
     GoRoute(
       path: '/reminder',
-      builder: (context, state) => AppointmentReminder(), 
+      builder: (context, state) => AppointmentScreen(), 
       ),
     GoRoute(
       path: '/register',
