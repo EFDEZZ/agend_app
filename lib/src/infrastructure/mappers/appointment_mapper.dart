@@ -4,6 +4,7 @@ import 'package:agend_app/src/infrastructure/models/appointment_model.dart';
 class AppointmentMapper {
   static Appointment appointmentModeltoEntity(AppointmentModel model) {
     return Appointment(
+      id: model.id,
       date: model.date,
       service: model.service,
       note: model.note,

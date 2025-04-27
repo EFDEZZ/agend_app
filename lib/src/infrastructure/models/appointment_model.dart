@@ -4,6 +4,7 @@ class AppointmentModel {
   final String note;
   final bool reminderSent;
   final DateTime createdAt;
+  final int id;
 
   AppointmentModel({
     required this.date,
@@ -11,6 +12,7 @@ class AppointmentModel {
     required this.note,
     required this.reminderSent,
     required this.createdAt,
+    required this.id,
   });
 
   factory AppointmentModel.fromJson(Map<String, dynamic> json) {
@@ -20,6 +22,7 @@ class AppointmentModel {
       note: json['notes'] ?? '',
       reminderSent: json['reminder_sent'] ?? false,
       createdAt: DateTime.parse(json['created_at']),
+      id: json['id'],
     );
   }
 }
