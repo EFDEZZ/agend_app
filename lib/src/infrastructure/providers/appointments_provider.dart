@@ -1,29 +1,51 @@
-
-import 'package:agend_app/src/infrastructure/models/appointment_model.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-
+import 'package:agend_app/src/domain/entities/appointment.dart';
+import 'package:agend_app/src/infrastructure/providers/appointment_repository_provider.dart';
 import 'package:riverpod/riverpod.dart';
 
-import '../services/services.dart';
-
-final appointmentsProvider = FutureProvider<List<AppointmentModel>>((ref) async {
-  final token = await AuthStorage.getToken();
-
-  if (token == null) throw Exception('Token no encontrado');
-
-  final response = await http.get(
-    Uri.parse('https://ds-appointments-production.up.railway.app/appointments'),
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token',
-    },
-  );
-
-  if (response.statusCode == 200) {
-    final List<dynamic> jsonList = json.decode(response.body);
-    return jsonList.map((e) => AppointmentModel.fromJson(e)).toList();
-  } else {
-    throw Exception('Error al obtener las citas');
-  }
+//Appointments By User
+final appointmentsByUserProvider = FutureProvider<List<Appointment>>((
+  ref,
+) async {
+  return ref.watch(appointmentRepositoryProvider).getAppointmentsByUser();
 });
+
+//All Appointments 
+final allAppointmentsProvider = FutureProvider<List<Appointment>>((ref) async {
+  return ref.watch(appointmentRepositoryProvider).getAllAppointments();
+});
+
+//Delete and update appointments
+final appointmentDeleteStateNotifierProvider = StateNotifierProvider<
+  AppointmentsStateNotifier,
+  AsyncValue<List<Appointment>>
+>((ref) => AppointmentsStateNotifier(ref));
+
+class AppointmentsStateNotifier extends StateNotifier<AsyncValue<List<Appointment>>> {
+  final Ref ref;
+  AppointmentsStateNotifier(this.ref) : super(const AsyncLoading());
+
+  Future<void> getAppointmentsByUser() async {
+    try {
+      state = const AsyncLoading();
+      final appointments = await ref.watch(appointmentRepositoryProvider).getAppointmentsByUser();
+      state = AsyncData(appointments);
+    } catch (e, stack) {
+      state = AsyncError(e, stack); // Pasamos ambos parámetros: el error y el stack trace
+    }
+  }
+
+  Future<void> deleteAppointment(int appointmentId) async {
+    try {
+      state = const AsyncLoading();  // Indicamos que estamos cargando
+
+      // Eliminar la cita
+      await ref.watch(appointmentRepositoryProvider).deleteAppointment(appointmentId);
+
+      // Volver a cargar las citas después de la eliminación
+      await getAppointmentsByUser();
+    } catch (e, stack) {
+      state = AsyncError(e, stack); // Pasamos ambos parámetros: el error y el stack trace
+    }
+  }
+}
+
