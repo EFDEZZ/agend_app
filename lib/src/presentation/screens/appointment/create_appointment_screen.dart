@@ -1,70 +1,74 @@
-import 'package:agend_app/src/infrastructure/services/services.dart';
+import 'package:agend_app/src/infrastructure/providers/appointments_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
-class CreateAppointmentScreen extends StatefulWidget {
+class CreateAppointmentScreen extends ConsumerStatefulWidget {
   const CreateAppointmentScreen({super.key});
 
   @override
   CreateAppointmentScreenState createState() => CreateAppointmentScreenState();
 }
 
-class CreateAppointmentScreenState extends State<CreateAppointmentScreen> {
+class CreateAppointmentScreenState extends ConsumerState<CreateAppointmentScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _serviceController = TextEditingController();
   final TextEditingController _notesController = TextEditingController();
   DateTime? _selectedDate;
   bool _isLoading = false;
-  final CreateAppointmentService _appointmentService =
-      CreateAppointmentService();
 
   Future<void> _submitAppointment() async {
-    if (!_formKey.currentState!.validate()) return;
+  if (!_formKey.currentState!.validate()) return;
 
-    if (_selectedDate == null) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Please select a date')));
-      }
-      return;
+  if (_selectedDate == null) {
+    if (mounted) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Please select a date')));
     }
+    return;
+  }
 
-    setState(() {
-      _isLoading = true;
-    });
+  setState(() {
+    _isLoading = true;
+  });
 
-    try {
-      final success = await _appointmentService.createAppointment(
-        date: _selectedDate!,
-        service: _serviceController.text,
-        notes: _notesController.text,
+  try {
+    final appointmentCreateNotifier = ref.read(
+      appointmentCreateStateNotifierProvider.notifier,
+    );
+
+    final success = await appointmentCreateNotifier.createAppointment(
+      date: _selectedDate!,
+      service: _serviceController.text,
+      notes: _notesController.text,
+    );
+
+    if (!mounted) return;
+
+    if (success) {
+      Navigator.of(context).pop(true);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to save appointment')),
       );
-
-      if (!mounted) return;
-
-      if (success) {
-        Navigator.of(context).pop(true);
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to save appointment')),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
+    }
+  } catch (e) {
+    if (mounted) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
+    }
+  } finally {
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
+}
+
 
   @override
   void dispose() {
