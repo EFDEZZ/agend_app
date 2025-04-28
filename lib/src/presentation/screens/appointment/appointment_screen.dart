@@ -11,7 +11,7 @@ class AppointmentScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = Theme.of(context).colorScheme;
-    final appointmentsAsync = ref.watch(appointmentsByUserProvider);
+    final appointmentsAsync = ref.watch(appointmentsProvider);
 
     return Scaffold(
       drawer: CustomDrawer(),
@@ -149,10 +149,10 @@ class AppointmentScreen extends ConsumerWidget {
                   
                                           // Invalidar para refrescar la lista
                                           ref.invalidate(
-                                            appointmentsByUserProvider,
+                                            appointmentsProvider,
                                           );
                   
-                                          // No necesitas hacer context.go() ni mounted aquí
+                                        
                                         }
                                       },
                                       icon: const Icon(
@@ -200,7 +200,7 @@ class _CreateAppointmentButton extends ConsumerWidget {
         );
 
         if (result == true && context.mounted) {
-          ref.invalidate(appointmentsByUserProvider); // Refresca al guardar
+          ref.invalidate(appointmentsProvider); // Refresca al guardar
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Appointment saved successfully'),

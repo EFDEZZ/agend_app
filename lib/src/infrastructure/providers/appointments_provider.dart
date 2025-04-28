@@ -1,3 +1,4 @@
+import 'package:agend_app/src/config/helper/is_admin.dart';
 import 'package:agend_app/src/domain/entities/appointment.dart';
 import 'package:agend_app/src/infrastructure/providers/appointment_repository_provider.dart';
 import 'package:agend_app/src/infrastructure/repositories/appointment_repository_impl.dart';
@@ -46,6 +47,20 @@ class AppointmentCreateNotifier extends StateNotifier<AsyncValue<bool>> {
     }
   }
 }
+
+// Get appointments evaluatin the isAdmin paramether
+final appointmentsProvider = FutureProvider<List<Appointment>>((ref) async {
+  final isAdminUser = await isAdmin();
+
+  if (isAdminUser) {
+    // admin
+    return ref.watch(appointmentRepositoryProvider).getAllAppointments();
+  } else {
+    //not admin
+    return ref.watch(appointmentRepositoryProvider).getAppointmentsByUser();
+  }
+});
+
 
 // Appointments By User
 final appointmentsByUserProvider = FutureProvider<List<Appointment>>((ref) async {

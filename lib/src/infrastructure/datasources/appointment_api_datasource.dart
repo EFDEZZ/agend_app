@@ -8,13 +8,12 @@ import 'package:agend_app/src/infrastructure/services/services.dart';
 import 'package:http/http.dart' as http;
 
 class AppointmentAPIDatasource extends AppointmentDatasource {
-  final String baseUrl =
-      'https://ds-appointments-production.up.railway.app';
+  final String baseUrl = 'https://ds-appointments-production.up.railway.app';
 
   @override
   Future<bool> createAppointment({
-    required DateTime date, 
-    required String service, 
+    required DateTime date,
+    required String service,
     required String notes,
   }) async {
     try {
@@ -67,17 +66,38 @@ class AppointmentAPIDatasource extends AppointmentDatasource {
       throw Exception('Failed to load appointments');
     }
   }
-  
+
   @override
   Future<List<Appointment>> getAllAppointments() async {
-      //TODO: Implemntar metodo
-      throw Exception('Error al obtener todas las citas');
-    
+    // Obtenemos el token guardado en AuthStorage
+    final token = await AuthStorage.getToken();
+
+    if (token == null) {
+      throw Exception('Token no disponible');
+    }
+
+    // Realizamos la solicitud GET pasando el token en los headers
+    final response = await http.get(
+      Uri.parse('$baseUrl/all_appointments'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = json.decode(response.body);
+      final appointments =
+          data.map((e) => AppointmentModel.fromJson(e)).toList();
+      return AppointmentMapper.toEntityList(appointments);
+    } else {
+      throw Exception('Failed to load appointments');
+    }
   }
-  
+
   @override
   Future<void> deleteAppointment(int appointmentId) async {
-  final token = await AuthStorage.getToken();
+    final token = await AuthStorage.getToken();
 
     if (token == null) {
       throw Exception('Token no disponible');
