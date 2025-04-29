@@ -5,7 +5,7 @@ final appRouter = GoRouter(
   initialLocation: '/login',
   routes: [
     GoRoute(
-      path: '/reminder',
+      path: '/appointments',
       builder: (context, state) => AppointmentScreen(), 
       ),
     GoRoute(
