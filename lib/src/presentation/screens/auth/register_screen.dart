@@ -57,12 +57,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
           backgroundColor: Colors.green,
         ),
       );
+      //Navega a la pantalal de login si el registro es exitoso
+      context.go('/login');
       
-      // Guarda los datos del usuario si es necesario
-      // Por ejemplo: await saveUserData(userData);
-      
-      // Navega a la pantalla principal
-      // Navigator.pushReplacementNamed(context, '/home');
     } else {
       // Error en el registro
       ScaffoldMessenger.of(context).showSnackBar(

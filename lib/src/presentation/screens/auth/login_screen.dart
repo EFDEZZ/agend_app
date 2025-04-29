@@ -39,7 +39,7 @@ class _LoginScreenState extends State<LoginScreen> {
         if (!mounted) return;
 
         if (success) {
-          context.go('/reminder');
+          context.go('/appointments');
 
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
