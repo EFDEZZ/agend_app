@@ -1,4 +1,5 @@
 import 'package:agend_app/src/domain/entities/appointment.dart';
+import 'package:agend_app/src/presentation/animations/animations.dart';
 import 'package:agend_app/src/presentation/screens/screens.dart';
 import 'package:agend_app/src/presentation/widgets/widgets.dart';
 import 'package:flutter/material.dart';
@@ -10,27 +11,32 @@ class AppointmentScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final colors = Theme.of(context).colorScheme;
     final appointmentsAsync = ref.watch(appointmentsProvider);
 
     return Scaffold(
       drawer: CustomDrawer(),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: _CreateAppointmentButton(),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButton: const _CreateAppointmentButton(),
       body: CustomScrollView(
         slivers: [
-          CustomSliverAppbar(title: 'Reminders'),
+          const CustomSliverAppbar(title: 'Reminders'),
           appointmentsAsync.when(
-            data:
-                (appointments) => SliverPadding(
-                  padding: const EdgeInsets.only(bottom: 100),
-                  sliver: SliverList(
-                    delegate: SliverChildBuilderDelegate((context, index) {
-                      final appointment = appointments[index];
-                      return _CustomAppointmentCard(appointment: appointment, colors: colors);
-                    }, childCount: appointments.length),
+            data: (appointments) {
+              if (appointments.isEmpty) {
+                return const SliverFillRemaining(
+                  child: Center(
+                    child: Text(
+                      'No appointments found.',
+                      style: TextStyle(fontSize: 18, color: Colors.grey),
+                    ),
                   ),
-                ),
+                );
+              } else {
+                return SliverToBoxAdapter(
+                  child: AppointmentListAnimation(appointments: appointments),
+                );
+              }
+            },
             loading:
                 () => const SliverFillRemaining(
                   child: Center(child: CircularProgressIndicator()),
@@ -46,8 +52,9 @@ class AppointmentScreen extends ConsumerWidget {
   }
 }
 
-class _CustomAppointmentCard extends ConsumerWidget {
-  const _CustomAppointmentCard({
+class CustomAppointmentCard extends ConsumerWidget {
+  const CustomAppointmentCard({
+    super.key,
     required this.appointment,
     required this.colors,
   });
@@ -56,12 +63,9 @@ class _CustomAppointmentCard extends ConsumerWidget {
   final ColorScheme colors;
 
   @override
-  Widget build(BuildContext context, ref) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Container(
-      margin: const EdgeInsets.symmetric(
-        horizontal: 1,
-        vertical: 3,
-      ),
+      margin: const EdgeInsets.symmetric(horizontal: 1, vertical: 3),
       child: SizedBox(
         height: 150,
         child: Card(
@@ -69,21 +73,15 @@ class _CustomAppointmentCard extends ConsumerWidget {
           child: InkWell(
             borderRadius: BorderRadius.circular(15),
             onTap: () {
-              //TODO: Agregar funcionalidad AppointmentDetailsView
+              // TODO: Mostrar detalles de la cita
             },
             child: Padding(
-              padding: EdgeInsets.only(
-                top: 20,
-                bottom: 20,
-                left: 15,
-                right: 5,
-              ),
+              padding: const EdgeInsets.all(15),
               child: Row(
                 children: [
                   Expanded(
                     child: Column(
-                      crossAxisAlignment:
-                          CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           appointment.service,
@@ -103,36 +101,33 @@ class _CustomAppointmentCard extends ConsumerWidget {
                         const SizedBox(height: 10),
                         Text(
                           "Date: ${appointment.formattedDate}",
-                          style: TextStyle(
-                            color: const Color.fromARGB(255, 203, 107, 12),
+                          style: const TextStyle(
+                            color: Color.fromARGB(255, 203, 107, 12),
                           ),
                         ),
                       ],
                     ),
                   ),
-                      
-                  // Buttons
-
-                  //Notification Button
                   IconButton(
                     onPressed: () {
-                      // Aquí agregarías la funcionalidad para enviar recordatorios
+                      // Acción de notificación
                     },
                     icon: Icon(
                       Icons.notifications_none_outlined,
                       color: colors.primary,
                     ),
                   ),
-                  //Delete Button
                   IconButton(
                     onPressed: () async {
-                      // Confirmación de eliminación
-                      final confirmDelete = await _showDeleteConfirmationDialog(context);
-                      if (confirmDelete == true) {
-                        // Llamar para eliminar
-                        await ref.read(appointmentDeleteStateNotifierProvider.notifier)
+                      final confirm = await _showDeleteConfirmationDialog(
+                        context,
+                      );
+                      if (confirm == true) {
+                        await ref
+                            .read(
+                              appointmentDeleteStateNotifierProvider.notifier,
+                            )
                             .deleteAppointment(appointment.id);
-                        // Invalidar para refrescar la lista
                         ref.invalidate(appointmentsProvider);
                       }
                     },
@@ -151,51 +146,30 @@ class _CustomAppointmentCard extends ConsumerWidget {
     );
   }
 
-
   Future<bool?> _showDeleteConfirmationDialog(BuildContext context) {
-    return showDialog<
-                      bool
-                    >(
-                      context: context,
-                      builder: (context) {
-                        return AlertDialog(
-                          title: const Text(
-                            'Delete Appointment',
-                          ),
-                          content: const Text(
-                            'Are you sure you want to delete this appointment?',
-                          ),
-                          actions: <Widget>[
-                            TextButton(
-                              onPressed:
-                                  () => Navigator.pop(
-                                    context,
-                                    false,
-                                  ),
-                              child: const Text('Cancel'),
-                            ),
-                            TextButton(
-                              onPressed:
-                                  () => Navigator.pop(
-                                    context,
-                                    true,
-                                  ),
-                              child: const Text(
-                                'Delete',
-                                style: TextStyle(
-                                  color: Color.fromARGB(
-                                    255,
-                                    175,
-                                    21,
-                                    10,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        );
-                      },
-                    );
+    return showDialog<bool>(
+      context: context,
+      builder:
+          (_) => AlertDialog(
+            title: const Text('Delete Appointment'),
+            content: const Text(
+              'Are you sure you want to delete this appointment?',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text(
+                  'Delete',
+                  style: TextStyle(color: Color.fromARGB(255, 175, 21, 10)),
+                ),
+              ),
+            ],
+          ),
+    );
   }
 }
 
@@ -203,30 +177,66 @@ class _CreateAppointmentButton extends ConsumerWidget {
   const _CreateAppointmentButton();
 
   @override
-  Widget build(BuildContext context, ref) {
-    return IconButton.filled(
-      onPressed: () async {
-        final result = await showModalBottomSheet<bool>(
-          isScrollControlled: true,
-          context: context,
-          builder: (context) => const CreateAppointmentScreen(),
-        );
-
-        if (result == true && context.mounted) {
-          ref.invalidate(appointmentsProvider); // Refresca al guardar
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Appointment saved successfully'),
-              backgroundColor: Colors.green,
-              behavior: SnackBarBehavior.floating,
-            ),
-          );
-        }
-      },
-      icon: const Padding(
-        padding: EdgeInsets.all(5.0),
-        child: Icon(Icons.add, size: 35),
+  Widget build(BuildContext context, WidgetRef ref) {
+    return SizedBox(
+      width: 200,
+      height: 200,
+      child: Center(
+        child: GestureDetector(
+          onTap: () async {
+            final result = await showModalBottomSheet<bool>(
+              isScrollControlled: true,
+              context: context,
+              builder: (context) => const CreateAppointmentScreen(),
+            );
+            if (result == true && context.mounted) {
+              ref.invalidate(appointmentsProvider);
+              showCustomSnackbar(context, 'Appointment saved successfully');
+            }
+          },
+          child: RippleAnimation(color: Theme.of(context).colorScheme.primary),
+        ),
       ),
     );
   }
+}
+
+void showCustomSnackbar(BuildContext context, String message) {
+  final overlay = Overlay.of(context);
+  final overlayEntry = OverlayEntry(
+    builder:
+        (context) => Positioned(
+          bottom: 0,
+          left: 0,
+          right: 0,
+          child: SafeArea(
+            top: false,
+            child: Material(
+              color: Colors.transparent,
+              child: Container(
+                margin: const EdgeInsets.all(12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 10,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.green,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  message,
+                  style: const TextStyle(color: Colors.white),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+          ),
+        ),
+  );
+
+  overlay.insert(overlayEntry);
+
+  Future.delayed(const Duration(seconds: 2), () {
+    overlayEntry.remove();
+  });
 }
