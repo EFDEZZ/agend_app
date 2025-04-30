@@ -104,3 +104,9 @@ class AppointmentsStateNotifier extends StateNotifier<AsyncValue<List<Appointmen
     }
   }
 }
+
+//Get appointment details by id
+final appointmentDetailsProvider = FutureProvider.family<Appointment, int>((ref, id) async {
+  final repository = ref.watch(appointmentRepositoryProvider);
+  return repository.getAppointmentDetails(id);
+});

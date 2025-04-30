@@ -6,4 +6,5 @@ abstract class AppointmentRepository {
   Future<List<Appointment>> getAppointmentsByUser();
   Future<List<Appointment>> getAllAppointments();
   Future<void> deleteAppointment(int appointmentId);
+  Future<Appointment> getAppointmentDetails(int id);
 }

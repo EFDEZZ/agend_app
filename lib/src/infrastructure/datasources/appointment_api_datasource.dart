@@ -115,4 +115,30 @@ class AppointmentAPIDatasource extends AppointmentDatasource {
       throw Exception('Error al eliminar cita: ${response.body}');
     }
   }
+
+  @override
+  Future<Appointment> getAppointmentDetails(int id) async {
+    final token = await AuthStorage.getToken();
+
+    if (token == null) {
+      throw Exception('Token no disponible');
+    }
+
+    final response = await http.get(
+      Uri.parse('$baseUrl/appointment/?appointment_id=$id'),
+      headers: {
+        // 'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+    );
+    if(response.statusCode !=200) {
+      print('Status code: ${response.statusCode}');
+      print('Body: ${response.body}');
+ 
+      throw Exception("Error ${response.statusCode}: ${response.body}");
+    }
+    final data =  json.decode(response.body);
+    final model = AppointmentModel.fromJson(data);
+    return AppointmentMapper.appointmentModeltoEntity(model);
+  }
 }

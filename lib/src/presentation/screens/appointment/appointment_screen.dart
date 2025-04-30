@@ -5,6 +5,7 @@ import 'package:agend_app/src/presentation/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:agend_app/src/infrastructure/providers/appointments_provider.dart';
+import 'package:go_router/go_router.dart';
 
 class AppointmentScreen extends ConsumerWidget {
   const AppointmentScreen({super.key});
@@ -73,7 +74,7 @@ class CustomAppointmentCard extends ConsumerWidget {
           child: InkWell(
             borderRadius: BorderRadius.circular(15),
             onTap: () {
-              // TODO: Mostrar detalles de la cita
+              context.push('/appointment?appointment_id=${appointment.id}');
             },
             child: Padding(
               padding: const EdgeInsets.all(15),

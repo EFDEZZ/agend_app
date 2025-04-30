@@ -6,4 +6,6 @@ abstract class AppointmentDatasource {
   Future<List<Appointment>> getAppointmentsByUser();
   Future<List<Appointment>> getAllAppointments();
   Future<void> deleteAppointment(int appointmentId);
+  Future<Appointment> getAppointmentDetails(int id);
+
 }

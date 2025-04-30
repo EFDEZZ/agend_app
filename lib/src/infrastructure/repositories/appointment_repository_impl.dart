@@ -28,4 +28,9 @@ class AppointmentRepositoryImpl extends AppointmentRepository{
     return datasource.deleteAppointment(appointmentId);
   }
   
+  @override
+  Future<Appointment> getAppointmentDetails(int id) {
+    return datasource.getAppointmentDetails(id);
+  }
+  
 }
