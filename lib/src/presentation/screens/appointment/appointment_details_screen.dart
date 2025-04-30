@@ -48,11 +48,11 @@ class AppointmentDetailScreen extends ConsumerWidget {
                   content: dateFormatted,
                 ),
                 const SizedBox(height: 16),
-                _InfoCard(
-                  leading: Icons.notifications_active,
-                  title: 'Reminder Sent',
-                  content: appointment.reminderSent ? 'Yes' : 'No',
-                ),
+                // _InfoCard(
+                //   leading: Icons.notifications_active,
+                //   title: 'Reminder Sent',
+                //   content: appointment.reminderSent ? 'Yes' : 'No',
+                // ),
               ],
             ),
           );
