@@ -225,7 +225,6 @@ class _CustomTextFormField extends StatelessWidget {
                 hintText: data,
                 hintStyle: const TextStyle(
                   color: Colors.grey,
-                  fontFamily: "Montserrat",
                 ),
                 errorStyle: const TextStyle(fontSize: 12, height: 0.6),
               ),
