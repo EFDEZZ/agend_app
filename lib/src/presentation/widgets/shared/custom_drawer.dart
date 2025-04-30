@@ -34,7 +34,7 @@ class CustomDrawer extends StatelessWidget {
             leading: const Icon(Icons.circle_notifications),
             title: const Text('Reminders'),
             onTap: () {
-              context.go('/reminder/');
+              context.go('/appointments/');
               // Navigate to home screen
             },
           ),
