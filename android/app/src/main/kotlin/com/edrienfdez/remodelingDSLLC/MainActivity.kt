@@ -1,4 +1,4 @@
-package com.example.agend_app
+package com.edrienfdez.remodelingDSLLC
 
 import io.flutter.embedding.android.FlutterActivity
 
