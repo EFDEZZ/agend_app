@@ -15,12 +15,15 @@ class AppointmentScreen extends ConsumerWidget {
     final appointmentsAsync = ref.watch(appointmentsProvider);
 
     return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text("Reminders", style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),),
+      ),
       drawer: CustomDrawer(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: const _CreateAppointmentButton(),
       body: CustomScrollView(
         slivers: [
-          const CustomSliverAppbar(title: 'Reminders'),
           appointmentsAsync.when(
             data: (appointments) {
               if (appointments.isEmpty) {
