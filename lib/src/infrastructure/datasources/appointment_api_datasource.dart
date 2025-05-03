@@ -45,7 +45,7 @@ class AppointmentAPIDatasource extends AppointmentDatasource {
     final token = await AuthStorage.getToken();
 
     if (token == null) {
-      throw Exception('Token no disponible');
+      return Future.value([]); 
     }
 
     // Realizamos la solicitud GET pasando el token en los headers
@@ -73,7 +73,7 @@ class AppointmentAPIDatasource extends AppointmentDatasource {
     final token = await AuthStorage.getToken();
 
     if (token == null) {
-      throw Exception('Token no disponible');
+      return Future.value([]); 
     }
 
     // Realizamos la solicitud GET pasando el token en los headers
@@ -100,7 +100,7 @@ class AppointmentAPIDatasource extends AppointmentDatasource {
     final token = await AuthStorage.getToken();
 
     if (token == null) {
-      throw Exception('Token no disponible');
+      return Future.value([]); 
     }
 
     final response = await http.delete(
@@ -132,9 +132,7 @@ class AppointmentAPIDatasource extends AppointmentDatasource {
       },
     );
     if(response.statusCode !=200) {
-      print('Status code: ${response.statusCode}');
-      print('Body: ${response.body}');
- 
+
       throw Exception("Error ${response.statusCode}: ${response.body}");
     }
     final data =  json.decode(response.body);

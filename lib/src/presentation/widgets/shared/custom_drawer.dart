@@ -1,3 +1,4 @@
+import 'package:agend_app/src/infrastructure/services/services.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -26,10 +27,7 @@ class CustomDrawer extends StatelessWidget {
               context.go('/home/');
             },
           ),
-          Divider(
-            indent: 20,
-            endIndent: 20,
-          ),
+          Divider(indent: 20, endIndent: 20),
           ListTile(
             leading: const Icon(Icons.circle_notifications),
             title: const Text('Reminders'),
@@ -38,15 +36,18 @@ class CustomDrawer extends StatelessWidget {
               // Navigate to home screen
             },
           ),
-          Divider(
-            indent: 20,
-            endIndent: 20,
-          ),
+          Divider(indent: 20, endIndent: 20),
           ListTile(
             leading: const Icon(Icons.logout),
             title: const Text('Logout'),
-            onTap: () {
-              context.pop(context);
+            onTap: () async {
+              try {
+                await AuthService.logout(context);
+              } catch (e) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Error al cerrar sesión: $e')),
+                );
+              }
             },
           ),
         ],
