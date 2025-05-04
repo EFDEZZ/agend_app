@@ -2,6 +2,7 @@ import 'package:agend_app/src/config/helper/is_admin.dart';
 import 'package:agend_app/src/domain/entities/appointment.dart';
 import 'package:agend_app/src/infrastructure/providers/appointment_repository_provider.dart';
 import 'package:agend_app/src/infrastructure/repositories/appointment_repository_impl.dart';
+import 'package:agend_app/src/infrastructure/services/auth_services/auth_storage.dart';
 import 'package:riverpod/riverpod.dart';
 
 // Create appointment
@@ -50,16 +51,27 @@ class AppointmentCreateNotifier extends StateNotifier<AsyncValue<bool>> {
 
 // Get appointments evaluatin the isAdmin paramether
 final appointmentsProvider = FutureProvider<List<Appointment>>((ref) async {
+  final repository = ref.watch(appointmentRepositoryProvider);
+
+  // Esperar hasta que el token esté disponible sin límite
+  String? token;
+  while (token == null) {
+    token = await AuthStorage.getToken();
+    if (token == null) {
+      await Future.delayed(const Duration(milliseconds: 200));
+    }
+  }
+
   final isAdminUser = await isAdmin();
 
   if (isAdminUser) {
-    // admin
-    return ref.watch(appointmentRepositoryProvider).getAllAppointments();
+    return repository.getAllAppointments();
   } else {
-    //not admin
-    return ref.watch(appointmentRepositoryProvider).getAppointmentsByUser();
+    return repository.getAppointmentsByUser();
   }
 });
+
+
 
 
 // Appointments By User

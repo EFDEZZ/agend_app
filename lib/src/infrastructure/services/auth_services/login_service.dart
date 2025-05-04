@@ -8,7 +8,8 @@ import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 
 class LoginService {
-  static const String _baseUrl = 'https://ds-appointments-production.up.railway.app';
+  static const String _baseUrl =
+      'https://ds-appointments-production.up.railway.app';
 
   Future<bool> login({
     required String email,
@@ -27,18 +28,22 @@ class LoginService {
         final token = result['access_token'];
 
         if (token != null) {
-          // 1. Guardar el token primero
+          // 1. Guardar el token
           await AuthStorage.saveToken(token);
-          
-          // 2. Invalidar providers
+
+          // 2. Invalidar todos los providers relacionados con citas
           final container = ProviderScope.containerOf(context, listen: false);
           container.invalidate(appointmentsProvider);
-          
-          // 3. Redirigir después de asegurar los datos
+          container.invalidate(appointmentsByUserProvider);
+          container.invalidate(allAppointmentsProvider);
+          container.invalidate(appointmentDeleteStateNotifierProvider);
+          container.invalidate(appointmentCreateStateNotifierProvider);
+
+          // 3. Redirigir a Home
           if (context.mounted) {
-            await Future.delayed(const Duration(milliseconds: 100)); // Pequeño delay
             context.go('/home');
           }
+
           return true;
         }
       }

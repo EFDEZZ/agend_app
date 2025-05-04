@@ -1,12 +1,13 @@
 import 'package:agend_app/src/infrastructure/services/services.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class CustomDrawer extends StatelessWidget {
+class CustomDrawer extends ConsumerWidget {
   const CustomDrawer({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, ref) {
     final colors = Theme.of(context).colorScheme;
     return Drawer(
       child: Column(
@@ -42,7 +43,7 @@ class CustomDrawer extends StatelessWidget {
             title: const Text('Logout'),
             onTap: () async {
               try {
-                await AuthService.logout(context);
+                await AuthService.logout(context, ref);
               } catch (e) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text('Error al cerrar sesión: $e')),

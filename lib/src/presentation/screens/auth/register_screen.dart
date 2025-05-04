@@ -53,7 +53,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       // final userData = result['userData'];
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Registro exitoso!'),
+          content: Text('Successful registration!'),
           backgroundColor: Colors.green,
         ),
       );

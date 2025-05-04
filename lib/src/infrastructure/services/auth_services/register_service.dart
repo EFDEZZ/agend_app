@@ -39,7 +39,7 @@ class RegisterService {
         // Respuesta exitosa - ajustada a la estructura real de tu API
         return {
           'success': true,
-          'message': 'Registro exitoso',
+          'message': 'Successful registration',
           'userData': {
             // Ahora devolvemos todos los datos del usuario
             'id': responseData['id'],

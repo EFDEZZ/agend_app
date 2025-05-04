@@ -1,4 +1,7 @@
+import 'package:agend_app/src/config/helper/is_admin.dart';
 import 'package:agend_app/src/domain/entities/appointment.dart';
+import 'package:agend_app/src/infrastructure/providers/appointment_repository_provider.dart';
+import 'package:agend_app/src/infrastructure/services/auth_services/auth_storage.dart';
 import 'package:agend_app/src/presentation/animations/animations.dart';
 import 'package:agend_app/src/presentation/screens/screens.dart';
 import 'package:agend_app/src/presentation/widgets/widgets.dart';
@@ -10,51 +13,66 @@ import 'package:go_router/go_router.dart';
 class AppointmentScreen extends ConsumerWidget {
   const AppointmentScreen({super.key});
 
+  Future<List<Appointment>> _fetchAppointments(WidgetRef ref) async {
+    final token = await AuthStorage.getToken();
+    if (token == null) throw Exception('Token no disponible');
+    final isAdminUser = await isAdmin();
+
+    final repository = ref.read(appointmentRepositoryProvider);
+
+    return isAdminUser
+        ? repository.getAllAppointments()
+        : repository.getAppointmentsByUser();
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final appointmentsAsync = ref.watch(appointmentsProvider);
-
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text("Reminders", style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),),
-      ),
-      drawer: CustomDrawer(),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: const _CreateAppointmentButton(),
-      body: CustomScrollView(
-        slivers: [
-          appointmentsAsync.when(
-            data: (appointments) {
-              if (appointments.isEmpty) {
-                return const SliverFillRemaining(
+    return FutureBuilder<List<Appointment>>(
+      future: _fetchAppointments(ref),
+      builder: (context, snapshot) {
+        return Scaffold(
+          appBar: AppBar(
+            centerTitle: true,
+            title: const Text(
+              "Reminders",
+              style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+            ),
+          ),
+          drawer: CustomDrawer(),
+          floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+          floatingActionButton: const _CreateAppointmentButton(),
+          body: CustomScrollView(
+            slivers: [
+              if (snapshot.connectionState == ConnectionState.waiting)
+                const SliverFillRemaining(
+                  child: Center(child: CircularProgressIndicator()),
+                )
+              else if (snapshot.hasError)
+                SliverFillRemaining(
+                  child: Center(child: Text('Error: ${snapshot.error}')),
+                )
+              else if (snapshot.data == null || snapshot.data!.isEmpty)
+                const SliverFillRemaining(
                   child: Center(
                     child: Text(
                       'No appointments found.',
                       style: TextStyle(fontSize: 18, color: Colors.grey),
                     ),
                   ),
-                );
-              } else {
-                return SliverToBoxAdapter(
-                  child: AppointmentListAnimation(appointments: appointments),
-                );
-              }
-            },
-            loading:
-                () => const SliverFillRemaining(
-                  child: Center(child: CircularProgressIndicator()),
+                )
+              else
+                SliverToBoxAdapter(
+                  child: AppointmentListAnimation(appointments: snapshot.data!),
                 ),
-            error:
-                (error, stack) => SliverFillRemaining(
-                  child: Center(child: Text('Error: ${error.toString()}')),
-                ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
+
+
 
 class CustomAppointmentCard extends ConsumerWidget {
   const CustomAppointmentCard({
