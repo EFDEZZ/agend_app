@@ -1,8 +1,5 @@
-import 'package:agend_app/src/config/helper/is_admin.dart';
 import 'package:agend_app/src/domain/entities/appointment.dart';
-import 'package:agend_app/src/infrastructure/providers/appointment_repository_provider.dart';
 import 'package:agend_app/src/infrastructure/providers/auth_state_provider.dart';
-import 'package:agend_app/src/infrastructure/services/auth_services/auth_storage.dart';
 import 'package:agend_app/src/presentation/animations/animations.dart';
 import 'package:agend_app/src/presentation/screens/screens.dart';
 import 'package:agend_app/src/presentation/widgets/widgets.dart';
@@ -22,16 +19,22 @@ class AppointmentScreen extends ConsumerWidget {
 
     return Scaffold(
       drawer: CustomDrawer(),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: _CreateAppointmentButton(),
       appBar: AppBar(
-        title: const Text("Reminders"),
+        title: const Text(
+          "Reminders",
+          style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+        ),
       ),
       body: authState.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, _) => Center(child: Text('Error: $error')),
         data: (isAuthenticated) {
           if (!isAuthenticated) {
-            return const Center(child: Text('Please login to view appointments'));
+            return const Center(
+              child: Text('Please login to view appointments'),
+            );
           }
 
           final displayAppointments = appointmentsState.maybeWhen(
@@ -40,9 +43,7 @@ class AppointmentScreen extends ConsumerWidget {
           );
 
           if (displayAppointments.isEmpty && !appointmentsState.isLoading) {
-            return const Center(
-              child: Text('No appointments found.'),
-            );
+            return const Center(child: Text('No appointments found.'));
           }
 
           return RefreshIndicator(
@@ -59,9 +60,8 @@ class AppointmentScreen extends ConsumerWidget {
   }
 }
 
-// Clases CustomAppointmentCard, _CreateAppointmentButton y showCustomSnackbar 
+// Clases CustomAppointmentCard, _CreateAppointmentButton y showCustomSnackbar
 // permanecen exactamente igual que en tu código original
-
 
 class CustomAppointmentCard extends ConsumerWidget {
   const CustomAppointmentCard({
@@ -126,19 +126,27 @@ class CustomAppointmentCard extends ConsumerWidget {
                     icon: Icon(
                       Icons.notifications_none_outlined,
                       color: colors.primary,
+                      size: 25,
                     ),
                   ),
-                   IconButton(
-              onPressed: () async {
-                final confirm = await _showDeleteConfirmationDialog(context);
-                if (confirm == true) {
-                  await ref.read(appointmentDeleteProvider.notifier)
-                      .deleteAppointment(appointment.id);
-                  // No necesitas invalidar manualmente, el notifier ya lo hace
-                }
-              },
-              icon: const Icon(Icons.delete_forever_outlined),
-            ),
+                  IconButton(
+                    onPressed: () async {
+                      final confirm = await _showDeleteConfirmationDialog(
+                        context,
+                      );
+                      if (confirm == true) {
+                        await ref
+                            .read(appointmentDeleteProvider.notifier)
+                            .deleteAppointment(appointment.id);
+                        // No necesitas invalidar manualmente, el notifier ya lo hace
+                      }
+                    },
+                    icon: const Icon(
+                      Icons.delete_forever_outlined,
+                      color: Color.fromARGB(255, 174, 21, 10),
+                      size: 25,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -192,7 +200,6 @@ class _CreateAppointmentButton extends ConsumerWidget {
               builder: (context) => const CreateAppointmentScreen(),
             );
             if (result == true && context.mounted) {
-              
               showCustomSnackbar(context, 'Appointment saved successfully');
             }
           },
