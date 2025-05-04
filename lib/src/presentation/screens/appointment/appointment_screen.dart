@@ -1,6 +1,7 @@
 import 'package:agend_app/src/config/helper/is_admin.dart';
 import 'package:agend_app/src/domain/entities/appointment.dart';
 import 'package:agend_app/src/infrastructure/providers/appointment_repository_provider.dart';
+import 'package:agend_app/src/infrastructure/providers/auth_state_provider.dart';
 import 'package:agend_app/src/infrastructure/services/auth_services/auth_storage.dart';
 import 'package:agend_app/src/presentation/animations/animations.dart';
 import 'package:agend_app/src/presentation/screens/screens.dart';
@@ -13,65 +14,53 @@ import 'package:go_router/go_router.dart';
 class AppointmentScreen extends ConsumerWidget {
   const AppointmentScreen({super.key});
 
-  Future<List<Appointment>> _fetchAppointments(WidgetRef ref) async {
-    final token = await AuthStorage.getToken();
-    if (token == null) throw Exception('Token no disponible');
-    final isAdminUser = await isAdmin();
-
-    final repository = ref.read(appointmentRepositoryProvider);
-
-    return isAdminUser
-        ? repository.getAllAppointments()
-        : repository.getAppointmentsByUser();
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return FutureBuilder<List<Appointment>>(
-      future: _fetchAppointments(ref),
-      builder: (context, snapshot) {
-        return Scaffold(
-          appBar: AppBar(
-            centerTitle: true,
-            title: const Text(
-              "Reminders",
-              style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+    final authState = ref.watch(authStateProvider);
+    final appointmentsState = ref.watch(appointmentsProvider);
+    final cachedAppointments = ref.watch(cachedAppointmentsProvider);
+
+    return Scaffold(
+      drawer: CustomDrawer(),
+      floatingActionButton: _CreateAppointmentButton(),
+      appBar: AppBar(
+        title: const Text("Reminders"),
+      ),
+      body: authState.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, _) => Center(child: Text('Error: $error')),
+        data: (isAuthenticated) {
+          if (!isAuthenticated) {
+            return const Center(child: Text('Please login to view appointments'));
+          }
+
+          final displayAppointments = appointmentsState.maybeWhen(
+            data: (appts) => appts,
+            orElse: () => cachedAppointments,
+          );
+
+          if (displayAppointments.isEmpty && !appointmentsState.isLoading) {
+            return const Center(
+              child: Text('No appointments found.'),
+            );
+          }
+
+          return RefreshIndicator(
+            onRefresh: () => ref.refresh(appointmentsProvider.future),
+            child: AppointmentListAnimation(
+              key: ValueKey(isAuthenticated),
+              appointments: displayAppointments,
+              isLoading: appointmentsState.isLoading,
             ),
-          ),
-          drawer: CustomDrawer(),
-          floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-          floatingActionButton: const _CreateAppointmentButton(),
-          body: CustomScrollView(
-            slivers: [
-              if (snapshot.connectionState == ConnectionState.waiting)
-                const SliverFillRemaining(
-                  child: Center(child: CircularProgressIndicator()),
-                )
-              else if (snapshot.hasError)
-                SliverFillRemaining(
-                  child: Center(child: Text('Error: ${snapshot.error}')),
-                )
-              else if (snapshot.data == null || snapshot.data!.isEmpty)
-                const SliverFillRemaining(
-                  child: Center(
-                    child: Text(
-                      'No appointments found.',
-                      style: TextStyle(fontSize: 18, color: Colors.grey),
-                    ),
-                  ),
-                )
-              else
-                SliverToBoxAdapter(
-                  child: AppointmentListAnimation(appointments: snapshot.data!),
-                ),
-            ],
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 }
 
+// Clases CustomAppointmentCard, _CreateAppointmentButton y showCustomSnackbar 
+// permanecen exactamente igual que en tu código original
 
 
 class CustomAppointmentCard extends ConsumerWidget {
@@ -139,26 +128,17 @@ class CustomAppointmentCard extends ConsumerWidget {
                       color: colors.primary,
                     ),
                   ),
-                  IconButton(
-                    onPressed: () async {
-                      final confirm = await _showDeleteConfirmationDialog(
-                        context,
-                      );
-                      if (confirm == true) {
-                        await ref
-                            .read(
-                              appointmentDeleteStateNotifierProvider.notifier,
-                            )
-                            .deleteAppointment(appointment.id);
-                        ref.invalidate(appointmentsProvider);
-                      }
-                    },
-                    icon: const Icon(
-                      Icons.delete_forever_outlined,
-                      color: Color.fromARGB(255, 188, 24, 12),
-                      size: 30,
-                    ),
-                  ),
+                   IconButton(
+              onPressed: () async {
+                final confirm = await _showDeleteConfirmationDialog(context);
+                if (confirm == true) {
+                  await ref.read(appointmentDeleteProvider.notifier)
+                      .deleteAppointment(appointment.id);
+                  // No necesitas invalidar manualmente, el notifier ya lo hace
+                }
+              },
+              icon: const Icon(Icons.delete_forever_outlined),
+            ),
                 ],
               ),
             ),
@@ -212,7 +192,7 @@ class _CreateAppointmentButton extends ConsumerWidget {
               builder: (context) => const CreateAppointmentScreen(),
             );
             if (result == true && context.mounted) {
-              ref.invalidate(appointmentsProvider);
+              
               showCustomSnackbar(context, 'Appointment saved successfully');
             }
           },

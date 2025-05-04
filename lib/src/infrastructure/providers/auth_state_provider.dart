@@ -1,8 +1,10 @@
 import 'package:agend_app/src/infrastructure/services/auth_services/auth_storage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final authStateProvider = StateNotifierProvider<AuthStateNotifier, AsyncValue<bool>>((ref) {
-  return AuthStateNotifier();
+// Cambia tu StateNotifierProvider a un FutureProvider
+final authStateProvider = FutureProvider<bool>((ref) async {
+  final token = await AuthStorage.getToken();
+  return token != null;
 });
 
 class AuthStateNotifier extends StateNotifier<AsyncValue<bool>> {

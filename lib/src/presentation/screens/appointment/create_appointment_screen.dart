@@ -16,59 +16,46 @@ class CreateAppointmentScreenState extends ConsumerState<CreateAppointmentScreen
   final TextEditingController _serviceController = TextEditingController();
   final TextEditingController _notesController = TextEditingController();
   DateTime? _selectedDate;
-  bool _isLoading = false;
 
   Future<void> _submitAppointment() async {
-  if (!_formKey.currentState!.validate()) return;
+    if (!_formKey.currentState!.validate()) return;
 
-  if (_selectedDate == null) {
-    if (mounted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Please select a date')));
+    if (_selectedDate == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Por favor selecciona una fecha')),
+        );
+      }
+      return;
     }
-    return;
-  }
 
-  setState(() {
-    _isLoading = true;
-  });
-
-  try {
-    final appointmentCreateNotifier = ref.read(
-      appointmentCreateStateNotifierProvider.notifier,
-    );
-
-    final success = await appointmentCreateNotifier.createAppointment(
-      date: _selectedDate!,
-      service: _serviceController.text,
-      notes: _notesController.text,
-    );
-
-    if (!mounted) return;
-
-    if (success) {
-      Navigator.of(context).pop(true);
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to save appointment')),
+    try {
+      final createNotifier = ref.read(appointmentCreateProvider.notifier);
+      final success = await createNotifier.createAppointment(
+        date: _selectedDate!,
+        service: _serviceController.text,
+        notes: _notesController.text,
       );
-    }
-  } catch (e) {
-    if (mounted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
-    }
-  } finally {
-    if (mounted) {
-      setState(() {
-        _isLoading = false;
-      });
+
+      if (!mounted) return;
+
+      if (success) {
+        // Invalida el provider de citas para actualizar la lista
+        ref.invalidate(appointmentsProvider);
+        Navigator.of(context).pop(true);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Error al guardar la cita')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: ${e.toString()}')),
+        );
+      }
     }
   }
-}
-
 
   @override
   void dispose() {
@@ -79,7 +66,9 @@ class CreateAppointmentScreenState extends ConsumerState<CreateAppointmentScreen
 
   @override
   Widget build(BuildContext context) {
+    final createState = ref.watch(appointmentCreateProvider);
     final colors = Theme.of(context).colorScheme;
+
     return SizedBox(
       height: 700,
       child: Form(
@@ -88,60 +77,78 @@ class CreateAppointmentScreenState extends ConsumerState<CreateAppointmentScreen
           child: Column(
             children: [
               const SizedBox(height: 20),
-              const Text("BOOK APPOINTMENT", style: TextStyle(fontSize: 20)),
-              const SizedBox(height: 10),
+              const Text(
+                "CREAR NUEVA CITA",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 20),
+              
+              // Campo de Servicio
               _CustomTextFormField(
-                data: "Service",
+                data: "Servicio*",
                 controller: _serviceController,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter a service';
+                    return 'Este campo es obligatorio';
                   }
                   return null;
                 },
               ),
 
+              // Campo de Notas
               _CustomTextFormField(
-                data: "Notes",
-                height: 200,
+                data: "Notas",
+                height: 150,
                 controller: _notesController,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a note';
-                  }
-                  return null;
-                },
                 maxLines: 5,
               ),
-              SizedBox(height: 10),
+
+              // Selector de Fecha
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
                 child: Card(
-                  color: Theme.of(context).colorScheme.surface,
-                  elevation: 4,
+                  color: colors.surface,
+                  elevation: 2,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: ListTile(
                     title: Text(
                       _selectedDate == null
-                          ? 'Select a date'
-                          : DateFormat('yyyy-MM-dd').format(_selectedDate!),
+                          ? 'Selecciona una fecha*'
+                          : DateFormat('dd/MM/yyyy').format(_selectedDate!),
                       style: TextStyle(
-                        color:
-                            _selectedDate == null ? Colors.grey : colors.secondary,
+                        color: _selectedDate == null ? Colors.grey : colors.onSurface,
                       ),
                     ),
-                    trailing: const Icon(Icons.calendar_month),
+                    trailing: Icon(Icons.calendar_today, color: colors.primary),
                     onTap: () async {
                       final DateTime? picked = await showDatePicker(
                         context: context,
                         initialDate: _selectedDate ?? DateTime.now(),
                         firstDate: DateTime.now(),
                         lastDate: DateTime.now().add(const Duration(days: 365)),
-                        cancelText: 'Cancel',
-                        confirmText: 'Select',
-                        helpText: 'Select a date',
+                        cancelText: 'Cancelar',
+                        confirmText: 'Seleccionar',
+                        helpText: 'SELECCIONA UNA FECHA',
+                        builder: (context, child) {
+                          return Theme(
+                            data: Theme.of(context).copyWith(
+                              colorScheme: ColorScheme.light(
+                                primary: colors.primary,
+                                onPrimary: colors.onPrimary,
+                                surface: colors.surface,
+                                onSurface: colors.onSurface,
+                              ),
+                              textButtonTheme: TextButtonThemeData(
+                                style: TextButton.styleFrom(
+                                  foregroundColor: colors.primary,
+                                ),
+                              ),
+                            ),
+                            child: child!,
+                          );
+                        },
                       );
                       if (picked != null && picked != _selectedDate) {
                         setState(() {
@@ -152,27 +159,58 @@ class CreateAppointmentScreenState extends ConsumerState<CreateAppointmentScreen
                   ),
                 ),
               ),
+
               const Spacer(),
-              Expanded(
+
+              // Botones Inferiores
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    TextButton(
-                      onPressed: () => context.pop(),
-                      child: const Text(
-                        "Cancel",
-                        style: TextStyle(fontSize: 20, color: Colors.red),
-                      ),
-                    ),
-                    _isLoading
-                        ? const CircularProgressIndicator()
-                        : TextButton(
-                          onPressed: _submitAppointment,
-                          child: const Text(
-                            "Save",
-                            style: TextStyle(fontSize: 20, color: Colors.blue),
+                    Expanded(
+                      child: OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          side: BorderSide(color: colors.error),
+                        ),
+                        onPressed: () => Navigator.of(context).pop(),
+                        child: Text(
+                          "CANCELAR",
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: colors.error,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: FilledButton(
+                        style: FilledButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          backgroundColor: colors.primary,
+                        ),
+                        onPressed: createState.isLoading ? null : _submitAppointment,
+                        child: createState.isLoading
+                            ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : Text(
+                                "GUARDAR",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: colors.onPrimary,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -202,33 +240,38 @@ class _CustomTextFormField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    return SizedBox(
-      width: double.infinity,
-      height: height,
-      child: Container(
-        margin: const EdgeInsets.only(left: 8, right: 8, top: 10),
-        child: Card(
-          color: colors.surface,
-          elevation: 4,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: TextFormField(
-              controller: controller,
-              validator: validator,
-              maxLines: maxLines,
-              decoration: InputDecoration(
-                alignLabelWithHint: false,
-                border: InputBorder.none,
-                hintText: data,
-                hintStyle: const TextStyle(
-                  color: Colors.grey,
-                ),
-                errorStyle: const TextStyle(fontSize: 12, height: 0.6),
-              ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
+      child: SizedBox(
+        height: height,
+        child: TextFormField(
+          controller: controller,
+          validator: validator,
+          maxLines: maxLines,
+          decoration: InputDecoration(
+            labelText: data,
+            alignLabelWithHint: true,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: colors.outline),
             ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: colors.outline),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: colors.primary, width: 2),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: colors.error),
+            ),
+            contentPadding:  EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: maxLines! > 1 ? 16 : 0,
+            ),
+            errorStyle: TextStyle(color: colors.error, fontSize: 12),
           ),
         ),
       ),

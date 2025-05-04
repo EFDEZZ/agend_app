@@ -36,8 +36,8 @@ class LoginService {
           container.invalidate(appointmentsProvider);
           container.invalidate(appointmentsByUserProvider);
           container.invalidate(allAppointmentsProvider);
-          container.invalidate(appointmentDeleteStateNotifierProvider);
-          container.invalidate(appointmentCreateStateNotifierProvider);
+          container.invalidate(appointmentDeleteProvider);
+          container.invalidate(appointmentCreateProvider);
 
           // 3. Redirigir a Home
           if (context.mounted) {
