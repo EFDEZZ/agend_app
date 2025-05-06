@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:agend_app/src/infrastructure/services/services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -32,45 +35,49 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Future<void> _registerUser() async {
   if (_formKey.currentState!.validate()) {
-    setState(() {
-      _isLoading = true;
-    });
+    setState(() => _isLoading = true);
 
-    final result = await RegisterService.registerUser(
-      name: _nameController.text.trim(),
-      email: _emailController.text.trim(),
-      password: _passwordController.text.trim(),
-    );
+    try {
+      await RegisterService.registerUser(
+        name: _nameController.text.trim(),
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
 
-    setState(() {
-      _isLoading = false;
-    });
+      if (!mounted) return;
 
-    if (!mounted) return;
-
-    if (result['success'] == true) {
-      // Registro exitoso - muestra los datos del usuario
-      // final userData = result['userData'];
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Successful registration!'),
+        const SnackBar(
+          content: Text('Registration successful!'),
           backgroundColor: Colors.green,
         ),
       );
-      //Navega a la pantalal de login si el registro es exitoso
       context.go('/login');
-      
-    } else {
-      // Error en el registro
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(result['message']),
-          backgroundColor: Colors.red,
-        ),
-      );
+    } on SocketException {
+      _showError('No internet connection. Check your network settings.');
+    } on TimeoutException {
+      _showError('Connection timeout. Please try again later.');
+    } on HttpException catch (e) {
+      _showError(e.message);
+    } on FormatException {
+      _showError('Invalid response from the server.');
+    } catch (e) {
+      _showError('An unexpected error occurred. Please try again.');
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 }
+
+void _showError(String message) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(message),
+      backgroundColor: Colors.red,
+    ),
+  );
+}
+
 
   @override
   Widget build(BuildContext context) {

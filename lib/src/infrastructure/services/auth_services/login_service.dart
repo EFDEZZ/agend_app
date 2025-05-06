@@ -21,7 +21,7 @@ class LoginService {
         Uri.parse('$_baseUrl/login'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({'email': email, 'password': password}),
-      );
+      ).timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         final result = json.decode(response.body);
@@ -49,7 +49,7 @@ class LoginService {
       }
       return false;
     } catch (e) {
-      throw Exception('Error en LoginService: $e');
+      rethrow;
     }
   }
 }

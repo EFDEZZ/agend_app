@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:agend_app/src/infrastructure/services/services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -25,44 +28,49 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _submitForm() async {
-    if (_formKey.currentState!.validate()) {
-      setState(() => _isLoading = true);
+  if (_formKey.currentState!.validate()) {
+    setState(() => _isLoading = true);
 
-      try {
-        final success = await LoginService().login(
-          email:  _emailController.text.trim(),
-          password:  _passwordController.text.trim(),
-          context: context,
-        );
+    try {
+      final success = await LoginService().login(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+        context: context,
+      );
 
-        setState(() => _isLoading = false);
+      if (!mounted) return;
 
-        if (!mounted) return;
+      setState(() => _isLoading = false);
 
-        if (success) {
-          context.go('/home');
-
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Login failed'),
-              backgroundColor: Colors.red,
-              behavior: SnackBarBehavior.floating,
-            ),
-          );
-        }
-      } catch (e) {
-        setState(() => _isLoading = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error: ${e.toString()}'),
-            backgroundColor: Colors.red,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
+      if (success) {
+        context.go('/home');
+      } else {
+        _showErrorMessage('Invalid email or password. Please try again.');
       }
+    } on PlatformException catch (e) {
+      setState(() => _isLoading = false);
+      _showErrorMessage(e.message ?? 'Platform error occurred.');
+    } on TimeoutException {
+      setState(() => _isLoading = false);
+      _showErrorMessage('The connection timed out. Please try again later.');
+    } on SocketException {
+      setState(() => _isLoading = false);
+      _showErrorMessage('No internet connection. Please check your network.');
+    } catch (e) {
+      setState(() => _isLoading = false);
+      _showErrorMessage('An unexpected error occurred. Please try again.');
     }
   }
+}
+void _showErrorMessage(String message) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(message),
+      backgroundColor: Colors.red,
+      behavior: SnackBarBehavior.floating,
+    ),
+  );
+}
 
   @override
   Widget build(BuildContext context) {
@@ -181,7 +189,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 alignment: Alignment.centerRight,
                                 child: TextButton(
                                   onPressed: () {},
-                                  child: const Text('¿You forgot your password?'),
+                                  child: const Text('¿Forgot your password?'),
                                 ),
                               ),
                               const SizedBox(height: 20),
@@ -208,7 +216,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  const Text("¿You don't have an account?"),
+                                  const Text("¿Don't have an account?"),
                                   TextButton(
                                     onPressed: () {
                                       context.push('/register/');
