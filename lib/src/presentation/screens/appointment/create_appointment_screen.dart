@@ -15,6 +15,7 @@ class CreateAppointmentScreenState
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _serviceController = TextEditingController();
   final TextEditingController _notesController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
   DateTime? _selectedDate;
   bool _isLoading = false;
 
@@ -38,6 +39,8 @@ class CreateAppointmentScreenState
         date: _selectedDate!,
         service: _serviceController.text,
         notes: _notesController.text,
+        phone: _phoneController.text,
+        
       );
 
       if (!mounted) return;
@@ -67,6 +70,7 @@ class CreateAppointmentScreenState
   void dispose() {
     _serviceController.dispose();
     _notesController.dispose();
+    _phoneController.dispose();
     super.dispose();
   }
 
@@ -100,6 +104,11 @@ class CreateAppointmentScreenState
               height: 150,
               maxLines: 5,
               controller: _notesController,
+            ),
+            _CustomTextFormField(
+              label: "Phone number",
+              maxLines: 1,
+              controller: _phoneController,
             ),
 
             Padding(

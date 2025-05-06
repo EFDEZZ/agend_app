@@ -33,6 +33,13 @@ class AppointmentDetailScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 16),
                 _InfoCard(
+                  leading: Icons.phone_android_outlined,
+                  trailing: Icons.edit,
+                  title: 'Client Phone',
+                  content: appointment.clientPhone,
+                ),
+                const SizedBox(height: 16),
+                _InfoCard(
                   leading: Icons.notes,
                   trailing: Icons.edit,
                   title: 'Notes',

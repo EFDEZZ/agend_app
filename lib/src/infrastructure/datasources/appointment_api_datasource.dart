@@ -15,10 +15,11 @@ class AppointmentAPIDatasource extends AppointmentDatasource {
     required DateTime date,
     required String service,
     required String notes,
+    required String phone,
   }) async {
     try {
       final token = await AuthStorage.getToken();
-      if (token == null) throw Exception("Token no encontrado");
+      if (token == null) throw Exception("Token not found");
 
       final response = await http.post(
         Uri.parse('$baseUrl/appointment'),
@@ -30,6 +31,7 @@ class AppointmentAPIDatasource extends AppointmentDatasource {
           "date_time": date.toUtc().toIso8601String(),
           "service": service,
           "notes": notes,
+          "phone": phone,
         }),
       );
 
@@ -121,7 +123,7 @@ class AppointmentAPIDatasource extends AppointmentDatasource {
     final token = await AuthStorage.getToken();
 
     if (token == null) {
-      throw Exception('Token no disponible');
+      throw Exception('Token not available');
     }
 
     final response = await http.get(

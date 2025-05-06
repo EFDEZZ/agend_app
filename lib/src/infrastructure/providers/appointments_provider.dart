@@ -28,6 +28,7 @@ class AppointmentCreateNotifier extends StateNotifier<AsyncValue<bool>> {
   Future<bool> createAppointment({
     required DateTime date,
     required String service,
+    required String phone,
     required String notes,
   }) async {
     state = const AsyncLoading();
@@ -36,6 +37,8 @@ class AppointmentCreateNotifier extends StateNotifier<AsyncValue<bool>> {
         date: date,
         service: service,
         notes: notes,
+        phone: phone,
+
       );
       state = AsyncData(success);
       return success;

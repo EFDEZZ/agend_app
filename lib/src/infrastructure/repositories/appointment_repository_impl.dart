@@ -8,8 +8,8 @@ class AppointmentRepositoryImpl extends AppointmentRepository{
   AppointmentRepositoryImpl({required this.datasource});
 
   @override
-  Future<bool> createAppointment({required DateTime date, required String service, required String notes}) {
-    return datasource.createAppointment(date: date, service: service, notes: notes);
+  Future<bool> createAppointment({required DateTime date, required String service, required String notes, required String phone}) {
+    return datasource.createAppointment(date: date, service: service, notes: notes, phone: phone);
   }
 
 

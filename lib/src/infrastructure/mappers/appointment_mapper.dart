@@ -7,6 +7,7 @@ class AppointmentMapper {
       id: model.id,
       date: model.date,
       service: model.service,
+      clientPhone: model.clientPhone,
       note: model.note,
       reminderSent: model.reminderSent,
       createdAt: model.createdAt,
