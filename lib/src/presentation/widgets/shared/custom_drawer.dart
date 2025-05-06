@@ -9,38 +9,75 @@ class CustomDrawer extends ConsumerWidget {
   @override
   Widget build(BuildContext context, ref) {
     final colors = Theme.of(context).colorScheme;
+
     return Drawer(
       child: Column(
         children: [
-          DrawerHeader(
-            decoration: BoxDecoration(color: colors.primary),
-            child: Center(
-              child: Text(
-                'Menu',
-                style: TextStyle(fontSize: 24, color: Colors.white),
+          // Header with profile, title, and user name
+          SizedBox(
+            width: double.infinity,
+            child: DrawerHeader(
+              decoration: BoxDecoration(
+                color: colors.onPrimary,
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(10),
+                  bottomRight: Radius.circular(50),
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    // CircleAvatar(
+                    //   child: Icon(Icons.account_circle_outlined, size: 40,),
+                    // ),
+                    const SizedBox(height: 5),
+                    // User name (this could be dynamic based on the user data)
+                    Text(
+                      'Menu',
+                      style: TextStyle(
+                        fontSize: 30,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    // Optional subtitle (like email or role)
+                    // Text(
+                    //   'user@example.com', // You can replace this with dynamic data
+                    //   style: TextStyle(
+                    //     fontSize: 16,
+                    //     color: Colors.white70,
+                    //   ),
+                    // ),
+                  ],
+                ),
               ),
             ),
           ),
-          ListTile(
-            leading: const Icon(Icons.home),
-            title: const Text('Home'),
-            onTap: () {
-              context.go('/home/');
-            },
+          // Menu items without divider before the first item
+          _buildListTile(
+            context,
+            icon: Icons.home,
+            title: 'Home',
+            route: '/home/',
+            showDivider: true, // No mostrar divider después del primer elemento
           ),
-          Divider(indent: 20, endIndent: 20),
-          ListTile(
-            leading: const Icon(Icons.circle_notifications),
-            title: const Text('Reminders'),
-            onTap: () {
-              context.go('/appointments/');
-              // Navigate to home screen
-            },
+          _buildListTile(
+            context,
+            icon: Icons.circle_notifications,
+            title: 'Reminders',
+            route: '/appointments/',
+            showDivider: true,
           ),
-          Divider(indent: 20, endIndent: 20),
-          ListTile(
-            leading: const Icon(Icons.logout),
-            title: const Text('Logout'),
+          _buildListTile(
+            context,
+            icon: Icons.logout,
+            title: 'Logout',
+            route: null,
+            showDivider: false, // No mostrar divider después del último elemento
             onTap: () async {
               try {
                 await AuthService.logout(context, ref);
@@ -53,6 +90,42 @@ class CustomDrawer extends ConsumerWidget {
           ),
         ],
       ),
+    );
+  }
+
+  // Helper method to create a ListTile with proper styling
+  Widget _buildListTile(
+    BuildContext context, {
+    required IconData icon,
+    required String title,
+    String? route,
+    bool showDivider = true,
+    void Function()? onTap,
+  }) {
+    return Column(
+      children: [
+        ListTile(
+          leading: Icon(icon, color: Theme.of(context).iconTheme.color),
+          title: Text(title, style: TextStyle(fontSize: 16)),
+          onTap: () {
+            if (route != null) {
+              context.go(route);
+            } else if (onTap != null) {
+              onTap();
+            }
+          },
+        ),
+        // Mostrar divider solo si showDivider es true y no es el último elemento
+        if (showDivider && title != 'Logout') _buildDivider(),
+      ],
+    );
+  }
+
+  // Helper method to add a custom divider with padding
+  Widget _buildDivider() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Divider(),
     );
   }
 }
