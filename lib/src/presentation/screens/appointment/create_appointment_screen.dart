@@ -90,7 +90,7 @@ class CreateAppointmentScreenState extends ConsumerState<CreateAppointmentScreen
             _CustomTextFormField(
               label: "Service",
               controller: _serviceController,
-              validator: (value) => value == null || value.isEmpty ? 'Required field' : null,
+              validator: (value) => value == null || value.isEmpty ? 'What service are you looking for?' : null,
             ),
 
             _CustomTextFormField(
@@ -98,12 +98,14 @@ class CreateAppointmentScreenState extends ConsumerState<CreateAppointmentScreen
               height: 150,
               maxLines: 5,
               controller: _notesController,
+              validator: (value) => value == null || value.isEmpty ? 'Let us know what you need' : null,
             ),
 
             _CustomTextFormField(
               label: "Phone number",
               maxLines: 1,
               controller: _phoneController,
+              validator: (value) => value == null || value.isEmpty ? 'A phone number is required' : null,
             ),
 
             Padding(
