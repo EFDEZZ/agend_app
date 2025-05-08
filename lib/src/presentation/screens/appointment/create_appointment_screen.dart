@@ -49,9 +49,7 @@ class CreateAppointmentScreenState
         ref.invalidate(appointmentsProvider);
         Navigator.of(context).pop(true);
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to save appointment')),
-        );
+        Navigator.of(context).pop(false);
       }
     } catch (e) {
       if (mounted) {

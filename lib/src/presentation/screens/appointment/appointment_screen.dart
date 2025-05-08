@@ -201,6 +201,8 @@ class _CreateAppointmentButton extends ConsumerWidget {
             );
             if (result == true && context.mounted) {
               showCustomSnackbar(context, 'Appointment saved successfully');
+            } else if (result == false && context.mounted) {
+              showCustomSnackbar(context, 'Failed to save appointment',  backgroundColor: Colors.red);
             }
           },
           child: RippleAnimation(color: Theme.of(context).colorScheme.primary),
@@ -210,42 +212,39 @@ class _CreateAppointmentButton extends ConsumerWidget {
   }
 }
 
-void showCustomSnackbar(BuildContext context, String message) {
+void showCustomSnackbar(BuildContext context, String message, {Color? backgroundColor}) {
   final overlay = Overlay.of(context);
   final overlayEntry = OverlayEntry(
-    builder:
-        (context) => Positioned(
-          bottom: 0,
-          left: 0,
-          right: 0,
-          child: SafeArea(
-            top: false,
-            child: Material(
-              color: Colors.transparent,
-              child: Container(
-                margin: const EdgeInsets.all(12),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 10,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.green,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  message,
-                  style: const TextStyle(color: Colors.white),
-                  textAlign: TextAlign.center,
-                ),
-              ),
+    builder: (context) => Positioned(
+      bottom: 0,
+      left: 0,
+      right: 0,
+      child: SafeArea(
+        top: false,
+        child: Material(
+          color: Colors.transparent,
+          child: Container(
+            margin: const EdgeInsets.all(12),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            decoration: BoxDecoration(
+              color: backgroundColor ?? Colors.green,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Text(
+              message,
+              style: const TextStyle(color: Colors.white),
+              textAlign: TextAlign.center,
             ),
           ),
         ),
+      ),
+    ),
   );
 
   overlay.insert(overlayEntry);
 
-  Future.delayed(const Duration(seconds: 2), () {
+  Future.delayed(const Duration(seconds: 4), () {
     overlayEntry.remove();
   });
 }
+
