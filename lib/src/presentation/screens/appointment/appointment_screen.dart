@@ -22,6 +22,7 @@ class AppointmentScreen extends ConsumerWidget {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: _CreateAppointmentButton(),
       appBar: AppBar(
+        centerTitle: true,
         title: const Text(
           "Reminders",
           style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
