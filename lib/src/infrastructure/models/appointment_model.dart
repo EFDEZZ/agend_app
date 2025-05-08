@@ -1,3 +1,4 @@
+
 class AppointmentModel {
   final DateTime date;
   final String service;
@@ -21,7 +22,7 @@ class AppointmentModel {
     return AppointmentModel(
       date: DateTime.parse(json['date_time']),
       service: json['service'] ?? '',
-      clientPhone: json['clientPhone'] ?? '',
+      clientPhone: json['clientPhone']?.toString() ?? '',
       note: json['notes'] ?? '',
       reminderSent: json['reminder_sent'] ?? false,
       createdAt: DateTime.parse(json['created_at']),
