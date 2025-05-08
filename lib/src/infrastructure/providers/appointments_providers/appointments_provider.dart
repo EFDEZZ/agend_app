@@ -1,7 +1,7 @@
 import 'package:agend_app/src/config/helper/is_admin.dart';
 import 'package:agend_app/src/domain/entities/appointment.dart';
-import 'package:agend_app/src/infrastructure/providers/appointment_repository_provider.dart';
-import 'package:agend_app/src/infrastructure/providers/auth_state_provider.dart';
+import 'package:agend_app/src/infrastructure/providers/appointments_providers/appointment_repository_provider.dart';
+import 'package:agend_app/src/infrastructure/providers/auth_providers/auth_state_provider.dart';
 import 'package:agend_app/src/infrastructure/repositories/appointment_repository_impl.dart';
 import 'package:agend_app/src/infrastructure/services/auth_services/auth_storage.dart';
 import 'package:riverpod/riverpod.dart';

@@ -21,7 +21,7 @@ class AuthService {
         context.go('/login');
       }
     } catch (e) {
-      throw Exception('Error en logout: $e');
+      throw Exception('Logout error: $e');
     }
   }
 }

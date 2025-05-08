@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:agend_app/src/infrastructure/providers/appointments_provider.dart';
+import 'package:agend_app/src/infrastructure/providers/appointments_providers/appointments_provider.dart';
 import 'package:agend_app/src/infrastructure/services/services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

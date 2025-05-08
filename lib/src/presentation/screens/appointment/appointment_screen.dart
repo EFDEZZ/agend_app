@@ -1,11 +1,11 @@
 import 'package:agend_app/src/domain/entities/appointment.dart';
-import 'package:agend_app/src/infrastructure/providers/auth_state_provider.dart';
+import 'package:agend_app/src/infrastructure/providers/auth_providers/auth_state_provider.dart';
 import 'package:agend_app/src/presentation/animations/animations.dart';
 import 'package:agend_app/src/presentation/screens/screens.dart';
 import 'package:agend_app/src/presentation/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:agend_app/src/infrastructure/providers/appointments_provider.dart';
+import 'package:agend_app/src/infrastructure/providers/appointments_providers/appointments_provider.dart';
 import 'package:go_router/go_router.dart';
 
 class AppointmentScreen extends ConsumerWidget {
