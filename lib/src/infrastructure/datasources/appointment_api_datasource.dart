@@ -102,7 +102,7 @@ class AppointmentAPIDatasource extends AppointmentDatasource {
     final token = await AuthStorage.getToken();
 
     if (token == null) {
-      return Future.value([]); 
+      return; 
     }
 
     final response = await http.delete(

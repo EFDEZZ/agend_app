@@ -10,8 +10,7 @@ class CreateAppointmentScreen extends ConsumerStatefulWidget {
   CreateAppointmentScreenState createState() => CreateAppointmentScreenState();
 }
 
-class CreateAppointmentScreenState
-    extends ConsumerState<CreateAppointmentScreen> {
+class CreateAppointmentScreenState extends ConsumerState<CreateAppointmentScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _serviceController = TextEditingController();
   final TextEditingController _notesController = TextEditingController();
@@ -40,7 +39,6 @@ class CreateAppointmentScreenState
         service: _serviceController.text,
         notes: _notesController.text,
         phone: _phoneController.text,
-        
       );
 
       if (!mounted) return;
@@ -92,9 +90,7 @@ class CreateAppointmentScreenState
             _CustomTextFormField(
               label: "Service",
               controller: _serviceController,
-              validator:
-                  (value) =>
-                      value == null || value.isEmpty ? 'Required field' : null,
+              validator: (value) => value == null || value.isEmpty ? 'Required field' : null,
             ),
 
             _CustomTextFormField(
@@ -103,6 +99,7 @@ class CreateAppointmentScreenState
               maxLines: 5,
               controller: _notesController,
             ),
+
             _CustomTextFormField(
               label: "Phone number",
               maxLines: 1,
@@ -110,21 +107,15 @@ class CreateAppointmentScreenState
             ),
 
             Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16.0,
-                vertical: 8,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
               child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 18,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
                 decoration: BoxDecoration(
                   color: colors.surface,
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
+                      color: Colors.black.withValues(alpha: 0.05),
                       blurRadius: 4,
                       offset: const Offset(0, 2),
                     ),
@@ -150,15 +141,12 @@ class CreateAppointmentScreenState
                     children: [
                       Expanded(
                         child: ListTile(
-                          title:  Text(
+                          title: Text(
                             _selectedDate == null
                                 ? 'Select a date'
                                 : DateFormat('MM/dd/yyyy').format(_selectedDate!),
                             style: TextStyle(
-                              color:
-                                  _selectedDate == null
-                                      ? Colors.grey
-                                      : colors.onSurface,
+                              color: _selectedDate == null ? Colors.grey : colors.onSurface,
                               fontSize: 16,
                             ),
                           ),
@@ -174,10 +162,7 @@ class CreateAppointmentScreenState
             const Spacer(),
 
             Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16.0,
-                vertical: 20,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
@@ -192,33 +177,30 @@ class CreateAppointmentScreenState
                       ),
                     ),
                   ),
-
-                  // const SizedBox(width: 16),
                   TextButton(
                     onPressed: _isLoading ? null : _submitAppointment,
-                    child:
-                        _isLoading
-                            ? const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: Colors.white,
-                              ),
-                            )
-                            : Text(
-                              "SAVE",
-                              style: TextStyle(
-                                fontSize: 20,
-                                color: colors.primary,
-                                fontWeight: FontWeight.bold,
-                              ),
+                    child: _isLoading
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
                             ),
+                          )
+                        : Text(
+                            "SAVE",
+                            style: TextStyle(
+                              fontSize: 20,
+                              color: colors.primary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                   ),
                 ],
               ),
             ),
-            SizedBox(height: 20,)
+            const SizedBox(height: 20),
           ],
         ),
       ),
@@ -255,7 +237,7 @@ class _CustomTextFormField extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 4,
               offset: const Offset(0, 2),
             ),
@@ -269,7 +251,7 @@ class _CustomTextFormField extends StatelessWidget {
             style: const TextStyle(fontSize: 16),
             decoration: InputDecoration(
               hintText: label,
-              labelStyle: TextStyle(color: colors.onSurface.withOpacity(0.7)),
+              labelStyle: TextStyle(color: colors.onSurface.withValues(alpha: 0.7)),
               border: InputBorder.none,
             ),
           ),

@@ -77,14 +77,17 @@ class CustomDrawer extends ConsumerWidget {
             icon: Icons.logout,
             title: 'Logout',
             route: null,
-            showDivider: false, // No mostrar divider después del último elemento
+            showDivider:
+                false, // No mostrar divider después del último elemento
             onTap: () async {
               try {
                 await AuthService.logout(context, ref);
               } catch (e) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Error al cerrar sesión: $e')),
-                );
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error in logout, try again')),
+                  );
+                }
               }
             },
           ),

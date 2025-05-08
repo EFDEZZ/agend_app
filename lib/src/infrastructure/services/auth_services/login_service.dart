@@ -17,11 +17,13 @@ class LoginService {
     required BuildContext context,
   }) async {
     try {
-      final response = await http.post(
-        Uri.parse('$_baseUrl/login'),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode({'email': email, 'password': password}),
-      ).timeout(const Duration(seconds: 10));
+      final response = await http
+          .post(
+            Uri.parse('$_baseUrl/login'),
+            headers: {'Content-Type': 'application/json'},
+            body: json.encode({'email': email, 'password': password}),
+          )
+          .timeout(const Duration(seconds: 10));
 
       if (response.statusCode == 200) {
         final result = json.decode(response.body);
@@ -32,13 +34,14 @@ class LoginService {
           await AuthStorage.saveToken(token);
 
           // 2. Invalidar todos los providers relacionados con citas
-          final container = ProviderScope.containerOf(context, listen: false);
-          container.invalidate(appointmentsProvider);
-          container.invalidate(appointmentsByUserProvider);
-          container.invalidate(allAppointmentsProvider);
-          container.invalidate(appointmentDeleteProvider);
-          container.invalidate(appointmentCreateProvider);
-
+          if (context.mounted) {
+            final container = ProviderScope.containerOf(context, listen: false);
+            container.invalidate(appointmentsProvider);
+            container.invalidate(appointmentsByUserProvider);
+            container.invalidate(allAppointmentsProvider);
+            container.invalidate(appointmentDeleteProvider);
+            container.invalidate(appointmentCreateProvider);
+          }
           // 3. Redirigir a Home
           if (context.mounted) {
             context.go('/home');
