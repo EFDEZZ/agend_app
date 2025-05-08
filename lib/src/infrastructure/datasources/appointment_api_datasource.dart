@@ -31,7 +31,7 @@ class AppointmentAPIDatasource extends AppointmentDatasource {
           "date_time": date.toUtc().toIso8601String(),
           "service": service,
           "notes": notes,
-          "phone": phone,
+          "clientPhone": phone,
         }),
       );
 
